@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #fff8f8, #ffeef0);
+      background: linear-gradient(to bottom, #fdf6f6, #fff0f5);
       overflow-x: hidden;
     }
 
@@ -17,25 +17,23 @@
       width: 100%;
       display: flex;
       justify-content: center;
-      margin-top: 20px;
-      padding-top: 20px;
+      padding: 30px 0 10px 0;
     }
 
     .upload-btn {
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #555;
+      background-color: rgba(255, 255, 255, 0.3);
+      color: #777;
       padding: 12px 24px;
-      border: 2px solid #f2b6c0;
+      border: 1px solid #e6c1cc;
       border-radius: 25px;
       font-size: 16px;
       cursor: pointer;
       transition: background-color 0.3s, border-color 0.3s;
-      margin-bottom: 10px;
     }
 
     .upload-btn:hover {
-      background-color: rgba(255, 255, 255, 0.3);
-      border-color: #e99bab;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-color: #dca2b0;
     }
 
     input[type="file"] {
@@ -45,8 +43,16 @@
     .separator {
       width: 80%;
       height: 1px;
-      background-color: #ccc;
-      margin: 10px auto;
+      background-color: #ddd;
+      margin: 8px auto;
+    }
+
+    .album-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      margin: 10px 0 15px 0;
+      color: #bb7894;
     }
 
     .gallery-container {
@@ -56,64 +62,56 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      margin-bottom: 30px;
+      margin: 10px 0 20px 0;
     }
 
     .carousel {
       display: flex;
-      gap: 40px;
       transition: transform 0.6s ease;
       align-items: center;
     }
 
     .carousel-item {
-      flex: 0 0 60vw;
+      flex-shrink: 0;
+      width: 60vw;
       max-height: 60vh;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 12px;
       transition: transform 0.6s ease, opacity 0.6s ease;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
     .carousel-item.prev {
-      transform: scale(0.6) rotateY(25deg) translateX(-60%);
-      opacity: 0.4;
-      z-index: 1;
+      transform: scale(0.5) rotateY(35deg) translateX(-70%);
+      opacity: 0.3;
+      z-index: 0;
     }
 
     .carousel-item.next {
-      transform: scale(0.6) rotateY(-25deg) translateX(60%);
-      opacity: 0.4;
-      z-index: 1;
+      transform: scale(0.5) rotateY(-35deg) translateX(70%);
+      opacity: 0.3;
+      z-index: 0;
     }
 
     .carousel-item.hidden {
       display: none;
-    }
-
-    .album-title {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
   <div class="separator"></div>
   <div class="album-title">shir&amp;yanir album</div>
+  <div class="separator"></div>
+
+  <div class="gallery-container" id="galleryContainer">
+    <div class="carousel" id="carousel"></div>
+  </div>
 
   <div class="upload-section">
     <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
       <label class="upload-btn" for="fileInput">Upload</label>
       <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="uploadImage()" />
     </form>
-  </div>
-
-  <div class="separator"></div>
-
-  <div class="gallery-container" id="galleryContainer">
-    <div class="carousel" id="carousel"></div>
   </div>
 
   <script>
@@ -148,19 +146,19 @@
         let el;
         const src = `/uploads/${img}?t=${Date.now()}`;
 
-        if (['mp4', 'webm'].includes(ext)) {
-          el = document.createElement('video');
+        if (["mp4", "webm"].includes(ext)) {
+          el = document.createElement("video");
           el.controls = true;
           el.src = src;
         } else {
-          el = document.createElement('img');
+          el = document.createElement("img");
           el.src = src;
         }
 
         el.classList.add('carousel-item');
 
         if (index === currentIndex) {
-          // main image
+          // center image
         } else if (index === currentIndex - 1) {
           el.classList.add('prev');
         } else if (index === currentIndex + 1) {
