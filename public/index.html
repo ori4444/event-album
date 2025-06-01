@@ -5,72 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Event Gallery</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
-      background: #121212;
-      font-family: Arial, sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: sans-serif;
+      background: #f0f0f0;
       overflow-x: hidden;
     }
 
     .gallery-container {
-      display: flex;
-      overflow-x: scroll;
-      scroll-snap-type: x mandatory;
-      width: 100vw;
-      height: 100vh;
-      padding-bottom: 80px;
       position: relative;
+      height: 80vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
     }
 
-    .gallery-container::-webkit-scrollbar {
-      display: none;
+    .carousel {
+      display: flex;
+      gap: 20px;
+      transition: transform 0.6s ease;
+      align-items: center;
     }
 
-    .media {
-      flex: 0 0 80vw;
-      margin: 0 10vw;
-      scroll-snap-align: center;
-      transition: transform 0.4s ease, opacity 0.4s ease;
+    .carousel-item {
+      flex: 0 0 60vw;
+      max-height: 55vh;
+      object-fit: cover;
+      border-radius: 10px;
+      transition: transform 0.6s ease, opacity 0.6s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .carousel-item.prev,
+    .carousel-item.next {
       transform: scale(0.7);
       opacity: 0.5;
     }
 
-    .gallery-container > .media.current {
-      transform: scale(1);
-      opacity: 1;
-      z-index: 1;
+    .carousel-item.hidden {
+      display: none;
     }
 
-    .media img,
-    .media video {
+    .upload-section {
+      position: relative;
       width: 100%;
-      height: auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
     }
 
-    .upload-button {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ff4081;
+    .upload-btn {
+      background-color: #4caf50;
       color: white;
-      padding: 15px 30px;
+      padding: 12px 24px;
       border: none;
-      border-radius: 30px;
+      border-radius: 25px;
       font-size: 16px;
       cursor: pointer;
-      z-index: 999;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: background-color 0.3s;
+    }
+
+    .upload-btn:hover {
+      background-color: #45a049;
     }
 
     input[type="file"] {
@@ -79,85 +78,68 @@
   </style>
 </head>
 <body>
-  <div class="gallery-container" id="gallery"></div>
+  <div class="gallery-container">
+    <div class="carousel" id="carousel"></div>
+  </div>
 
-  <label class="upload-button">
-    Upload File
-    <input type="file" accept="image/*,video/*" onchange="uploadFile(event)" />
-  </label>
+  <div class="upload-section">
+    <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+      <label class="upload-btn" for="fileInput">Upload</label>
+      <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="uploadImage()" />
+    </form>
+  </div>
 
   <script>
-    const gallery = document.getElementById('gallery');
+    let images = [];
+    let currentIndex = 0;
 
-    async function loadImages() {
-      const res = await fetch('/images');
-      const files = await res.json();
+    function fetchImages() {
+      fetch('/images')
+        .then(res => res.json())
+        .then(data => {
+          images = data.reverse();
+          renderCarousel();
+        });
+    }
 
-      const ordered = [];
-      for (let i = 0; i < files.length; i++) {
-        if (i % 2 === 0) {
-          ordered.splice(ordered.length / 2, 0, files[i]);
-        } else {
-          ordered.unshift(files[i]);
-        }
-      }
+    function renderCarousel() {
+      const carousel = document.getElementById('carousel');
+      carousel.innerHTML = '';
 
-      gallery.innerHTML = '';
-      for (const file of ordered) {
-        const ext = file.split('.').pop().toLowerCase();
-        const el = document.createElement('div');
-        el.className = 'media';
+      images.forEach((img, index) => {
+        const ext = img.split('.').pop().toLowerCase();
+        let el;
 
         if (['mp4', 'webm'].includes(ext)) {
-          el.innerHTML = `<video src="/uploads/${file}" controls muted loop></video>`;
+          el = document.createElement('video');
+          el.controls = true;
+          el.src = `/uploads/${img}`;
         } else {
-          el.innerHTML = `<img src="/uploads/${file}" alt="${file}" />`;
+          el = document.createElement('img');
+          el.src = `/uploads/${img}`;
         }
 
-        gallery.appendChild(el);
-      }
+        el.classList.add('carousel-item');
 
-      highlightCurrent();
-    }
+        if (index === currentIndex) {
+          // center image
+        } else if ((index - currentIndex + images.length) % 4 === 1) {
+          el.classList.add('next');
+        } else if ((currentIndex - index + images.length) % 4 === 1) {
+          el.classList.add('prev');
+        } else {
+          el.classList.add('hidden');
+        }
 
-    function highlightCurrent() {
-      const mediaItems = document.querySelectorAll('.media');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('current');
-          } else {
-            entry.target.classList.remove('current');
-          }
-        });
-      }, {
-        root: gallery,
-        threshold: 0.5
+        carousel.appendChild(el);
       });
-
-      mediaItems.forEach(el => observer.observe(el));
     }
 
-    async function uploadFile(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const res = await fetch('/upload', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (res.ok) {
-        await loadImages();
-      } else {
-        alert('Upload failed');
-      }
+    function uploadImage() {
+      document.getElementById('uploadForm').submit();
     }
 
-    loadImages();
+    window.onload = fetchImages;
   </script>
 </body>
 </html>
