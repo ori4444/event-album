@@ -3,45 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Event Gallery</title>
+  <title>Gallery Menu</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(to bottom, #fdf6f6, #fff0f5);
-      overflow-x: hidden;
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      position: relative;
-    }
-
-    .top-line, .bottom-line {
-      width: 100%;
-      border-top: 1px solid #ccc;
-      margin: 0;
-    }
-
-    .upload-section {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
-      display: flex;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
-    .upload-btn {
+    .menu-container {
+      text-align: center;
+    }
+
+    .menu-title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #bb7894;
+      margin-bottom: 40px;
+    }
+
+    .gallery-button, .upload-btn {
       background-color: rgba(255, 255, 255, 0.2);
       color: #777;
-      padding: 12px 24px;
+      padding: 14px 28px;
       border: 1px solid #e6c1cc;
       border-radius: 25px;
-      font-size: 16px;
+      font-size: 18px;
       cursor: pointer;
       transition: background-color 0.3s, border-color 0.3s;
+      text-decoration: none;
+      margin: 10px;
     }
 
-    .upload-btn:hover {
+    .gallery-button:hover, .upload-btn:hover {
       background-color: rgba(255, 255, 255, 0.4);
       border-color: #dca2b0;
     }
@@ -49,173 +48,16 @@
     input[type="file"] {
       display: none;
     }
-
-    .bottom-line {
-      margin-bottom: 10px;
-    }
-
-    .gallery-container {
-      position: absolute;
-      bottom: 70px;
-      height: 50vh;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .carousel {
-      display: flex;
-      position: relative;
-      transition: transform 0.6s ease;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .carousel-item {
-      position: absolute;
-      width: 89vw;
-      height: calc(50vh - 20px);
-      object-fit: cover;
-      border-radius: 12px;
-      transition: transform 0.6s ease, opacity 0.6s ease;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      opacity: 0;
-      z-index: 0;
-      border: 3px solid #eee;
-      box-sizing: border-box;
-    }
-
-    .carousel-item.center {
-      transform: scale(1);
-      opacity: 1;
-      z-index: 3;
-      border: 4px solid #ddd;
-    }
-
-    .carousel-item.prev {
-      transform: scale(0.75) translateX(-95%) skewY(2deg);
-      opacity: 0.3;
-      z-index: 1;
-    }
-
-    .carousel-item.next {
-      transform: scale(0.75) translateX(95%) skewY(-2deg);
-      opacity: 0.3;
-      z-index: 1;
-    }
-
-    .album-title {
-      position: absolute;
-      top: 10vh;
-      width: 100%;
-      text-align: center;
-      font-size: 26px;
-      font-weight: bold;
-      color: #bb7894;
-      padding: 10px 0;
-    }
   </style>
 </head>
 <body>
-  <div class="album-title">shir&amp;yanir album</div>
-  <div class="top-line"></div>
-  <div class="gallery-container" id="galleryContainer">
-    <div class="carousel" id="carousel"></div>
-  </div>
-  <div class="bottom-line"></div>
-  <div class="upload-section">
+  <div class="menu-container">
+    <div class="menu-title">shir&amp;yanir album</div>
+    <a href="album.html" class="gallery-button">Enter Gallery</a>
     <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
       <label class="upload-btn" for="fileInput">Upload</label>
-      <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="uploadImage()" />
+      <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="document.getElementById('uploadForm').submit();" />
     </form>
   </div>
-
-  <script>
-    let images = [];
-    let currentIndex = 0;
-
-    function fetchImages() {
-      fetch('/images')
-        .then(res => res.json())
-        .then(data => {
-          images = [];
-          let left = [], right = [];
-          data.forEach((img, i) => {
-            if (i % 2 === 0) {
-              right.unshift(img);
-            } else {
-              left.push(img);
-            }
-          });
-          images = [...right, ...left];
-          currentIndex = Math.ceil(images.length / 2) - 1;
-          renderCarousel();
-        });
-    }
-
-    function renderCarousel() {
-      const carousel = document.getElementById('carousel');
-      carousel.innerHTML = '';
-
-      images.forEach((img, index) => {
-        const ext = img.split('.').pop().toLowerCase();
-        let el;
-        const src = `/uploads/${img}?t=${Date.now()}`;
-
-        if (["mp4", "webm"].includes(ext)) {
-          el = document.createElement("video");
-          el.controls = true;
-          el.src = src;
-        } else {
-          el = document.createElement("img");
-          el.src = src;
-        }
-
-        el.classList.add('carousel-item');
-
-        if (index === currentIndex) {
-          el.classList.add('center');
-        } else if (index === currentIndex - 1) {
-          el.classList.add('prev');
-        } else if (index === currentIndex + 1) {
-          el.classList.add('next');
-        }
-
-        carousel.appendChild(el);
-      });
-    }
-
-    function uploadImage() {
-      document.getElementById('uploadForm').submit();
-    }
-
-    let startX = 0;
-    let endX = 0;
-
-    const container = document.getElementById('galleryContainer');
-
-    container.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-    });
-
-    container.addEventListener('touchend', (e) => {
-      endX = e.changedTouches[0].clientX;
-      handleSwipe();
-    });
-
-    function handleSwipe() {
-      if (endX - startX > 50) {
-        currentIndex = (currentIndex - 1 + images.length) % images.length;
-        renderCarousel();
-      } else if (startX - endX > 50) {
-        currentIndex = (currentIndex + 1) % images.length;
-        renderCarousel();
-      }
-    }
-
-    window.onload = fetchImages;
-  </script>
 </body>
 </html>

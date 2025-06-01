@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Album Gallery</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #fdf6f6, #fff0f5);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #777;
+      padding: 10px 20px;
+      border: 1px solid #e6c1cc;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      border-color: #dca2b0;
+    }
+
+    .gallery-page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .gallery-item {
+      width: 70%;
+      max-width: 90%;
+      height: 28%;
+      object-fit: cover;
+      border: 2px solid #e6c1cc;
+      transform: rotate(-3deg);
+      transition: transform 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .gallery-item:nth-child(even) {
+      transform: rotate(3deg);
+    }
+
+    .gallery-item:hover {
+      transform: scale(1.02);
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+      background: transparent;
+    }
+
+    .nav-button {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #777;
+      padding: 10px 20px;
+      border: 1px solid #e6c1cc;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .nav-button:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      border-color: #dca2b0;
+    }
+  </style>
+</head>
+<body>
+  <button class="back-button" onclick="goHome()">Back to Home</button>
+  <div id="gallery" class="gallery-page"></div>
+  <div class="nav-buttons">
+    <button class="nav-button" onclick="prevPage()">Previous</button>
+    <button class="nav-button" onclick="nextPage()">Next</button>
+  </div>
+
+  <script>
+    let images = [];
+    let currentPage = 0;
+    const imagesPerPage = 3;
+
+    function fetchImages() {
+      fetch('/images')
+        .then(res => res.json())
+        .then(data => {
+          images = data;
+          renderPage();
+        });
+    }
+
+    function renderPage() {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+
+      const start = currentPage * imagesPerPage;
+      const end = start + imagesPerPage;
+      const pageImages = images.slice(start, end);
+
+      pageImages.forEach(img => {
+        const ext = img.split('.').pop().toLowerCase();
+        const src = `/uploads/${img}?t=${Date.now()}`;
+        let el;
+
+        if (["mp4", "webm"].includes(ext)) {
+          el = document.createElement("video");
+          el.src = src;
+          el.controls = true;
+        } else {
+          el = document.createElement("img");
+          el.src = src;
+        }
+
+        el.classList.add('gallery-item');
+        gallery.appendChild(el);
+      });
+    }
+
+    function nextPage() {
+      if ((currentPage + 1) * imagesPerPage < images.length) {
+        currentPage++;
+        renderPage();
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 0) {
+        currentPage--;
+        renderPage();
+      }
+    }
+
+    function goHome() {
+      window.location.href = '/';
+    }
+
+    window.onload = fetchImages;
+  </script>
+</body>
+</html>
