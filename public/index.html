@@ -70,36 +70,40 @@
 
     .carousel {
       display: flex;
+      position: relative;
       transition: transform 0.6s ease;
       align-items: center;
       justify-content: center;
-      gap: 20px;
     }
 
     .carousel-item {
-      flex-shrink: 0;
+      position: absolute;
       width: 40vw;
       max-height: 40vh;
       object-fit: contain;
       border-radius: 12px;
       transition: transform 0.6s ease, opacity 0.6s ease;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      z-index: 0;
+    }
+
+    .carousel-item.center {
+      transform: scale(1);
+      opacity: 1;
+      z-index: 3;
     }
 
     .carousel-item.prev {
-      transform: scale(0.6) rotateY(35deg) translateX(-100%);
-      opacity: 0.4;
-      z-index: 0;
+      transform: scale(0.6) rotateY(35deg) translateX(-40%);
+      opacity: 0.3;
+      z-index: 1;
     }
 
     .carousel-item.next {
-      transform: scale(0.6) rotateY(-35deg) translateX(100%);
-      opacity: 0.4;
-      z-index: 0;
-    }
-
-    .carousel-item.hidden {
-      display: none;
+      transform: scale(0.6) rotateY(-35deg) translateX(40%);
+      opacity: 0.3;
+      z-index: 1;
     }
   </style>
 </head>
@@ -160,13 +164,11 @@
         el.classList.add('carousel-item');
 
         if (index === currentIndex) {
-          // Main image
+          el.classList.add('center');
         } else if (index === currentIndex - 1) {
           el.classList.add('prev');
         } else if (index === currentIndex + 1) {
           el.classList.add('next');
-        } else {
-          el.classList.add('hidden');
         }
 
         carousel.appendChild(el);
