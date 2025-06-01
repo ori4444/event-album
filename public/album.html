@@ -64,27 +64,35 @@
     }
 
     .nav-buttons {
+      position: absolute;
+      top: 50%;
+      width: 100%;
       display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 10px;
-      background: transparent;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+      transform: translateY(-50%);
     }
 
     .nav-button {
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #777;
-      padding: 10px 20px;
+      background-color: rgba(255, 255, 255, 0.6);
       border: 1px solid #e6c1cc;
-      border-radius: 25px;
-      font-size: 16px;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #bb7894;
       cursor: pointer;
-      transition: background-color 0.3s, border-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
     }
 
     .nav-button:hover {
-      background-color: rgba(255, 255, 255, 0.4);
-      border-color: #dca2b0;
+      background-color: rgba(255, 255, 255, 0.8);
     }
   </style>
 </head>
@@ -92,8 +100,8 @@
   <button class="back-button" onclick="goHome()">Back to Home</button>
   <div id="gallery" class="gallery-page"></div>
   <div class="nav-buttons">
-    <button class="nav-button" onclick="prevPage()">Previous</button>
-    <button class="nav-button" onclick="nextPage()">Next</button>
+    <button class="nav-button" onclick="prevPage()">&#8592;</button>
+    <button class="nav-button" onclick="nextPage()">&#8594;</button>
   </div>
 
   <script>
