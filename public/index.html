@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event Album</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    .gallery { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
+    .gallery img { width: 150px; border-radius: 10px; box-shadow: 0 0 5px gray; }
+  </style>
+</head>
+<body>
+  <h1>Upload Your Photo</h1>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="image" accept="image/*" required>
+    <button type="submit">Upload</button>
+  </form>
+
+  <h2>Gallery</h2>
+  <div class="gallery" id="gallery"></div>
+
+  <script>
+    fetch('/images')
+      .then(res => res.json())
+      .then(images => {
+        const gallery = document.getElementById('gallery');
+        images.reverse().forEach(file => {
+          const img = document.createElement('img');
+          img.src = '/uploads/' + file;
+          gallery.appendChild(img);
+        });
+      });
+  </script>
+</body>
+</html>
