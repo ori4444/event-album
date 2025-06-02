@@ -1,33 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gallery Menu</title>
+  <title>Home</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #fdf6f6, #fff0f5);
+      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1748877012/main_backround_qlahla.webp') no-repeat center center fixed;
+      background-size: cover;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
+      height: 100vh;
+      position: relative;
       justify-content: center;
       align-items: center;
-      height: 100vh;
     }
 
-    .menu-container {
-      text-align: center;
+    .top-line,
+    .bottom-line {
+      width: 100%;
+      border-top: 1px solid #ccc;
+      margin: 0;
     }
 
-    .menu-title {
-      font-size: 32px;
-      font-weight: bold;
-      color: #bb7894;
-      margin-bottom: 40px;
+    .upload-section {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
 
-    .gallery-button, .upload-btn {
+    .upload-btn {
       background-color: rgba(255, 255, 255, 0.2);
       color: #777;
       padding: 14px 28px;
@@ -40,24 +48,47 @@
       margin: 10px;
     }
 
-    .gallery-button:hover, .upload-btn:hover {
-      background-color: rgba(255, 255, 255, 0.4);
-      border-color: #dca2b0;
+    input[type="file"] {
+      display: none;
     }
 
-    input[type="file"] {
+    .album-image-btn {
+      width: 300px;
+      height: auto;
+      cursor: pointer;
       display: none;
     }
   </style>
 </head>
+
 <body>
-  <div class="menu-container">
-    <div class="menu-title">shir&amp;yanir album</div>
-    <a href="album.html" class="gallery-button">Enter Gallery</a>
+  <img id="albumBtn" class="album-image-btn" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748878310/album_l6prar.png" alt="Open Album" />
+
+  <div class="top-line"></div>
+  <div class="bottom-line"></div>
+
+  <div class="upload-section">
     <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
       <label class="upload-btn" for="fileInput">Upload</label>
-      <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="document.getElementById('uploadForm').submit();" />
+      <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="uploadImage()" />
     </form>
   </div>
+
+  <script>
+    function uploadImage() {
+      document.getElementById('uploadForm').submit();
+    }
+
+    fetch('/images')
+      .then(res => res.json())
+      .then(data => {
+        if (data.length >= 4) {
+          const albumBtn = document.getElementById('albumBtn');
+          albumBtn.style.display = 'block';
+          albumBtn.onclick = () => window.location.href = 'album.html';
+        }
+      });
+  </script>
 </body>
+
 </html>

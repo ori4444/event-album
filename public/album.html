@@ -1,178 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Album Gallery</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Album</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #fdf6f6, #fff0f5);
-      height: 100vh;
+      padding: 0;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      background-color: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
     }
 
-    .back-button {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #777;
-      padding: 2vh 4vw;
-      border: 1px solid #e6c1cc;
-      border-radius: 25px;
-      font-size: 4vw;
-      cursor: pointer;
-      transition: background-color 0.3s, border-color 0.3s;
+    #page-frame {
+      width: 100vw;
+      height: 100vh;
+      border: none;
     }
 
-    .back-button:hover {
-      background-color: rgba(255, 255, 255, 0.4);
-      border-color: #dca2b0;
-    }
-
-    .gallery-page {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-evenly;
-      padding: 2vh 2vw;
-      box-sizing: border-box;
-    }
-
-    .gallery-item {
-      width: auto;
-      max-width: 70vw;
-      max-height: 30vh;
-      object-fit: contain;
-      border: 2px solid #e6c1cc;
-      margin: 1vh 0;
-      transform: rotate(-3deg);
-      transition: transform 0.3s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .gallery-item:nth-child(even) {
-      transform: rotate(3deg);
-    }
-
-    .gallery-item:hover {
-      transform: scale(1.02);
-    }
-
-    .nav-buttons {
+    .nav-btn {
       position: absolute;
       top: 50%;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 4vw;
-      box-sizing: border-box;
       transform: translateY(-50%);
-      pointer-events: none;
-    }
-
-    .nav-button {
       background-color: rgba(255, 255, 255, 0.6);
-      border: 1px solid #e6c1cc;
+      border: none;
       border-radius: 50%;
-      width: 12vw;
-      height: 12vw;
-      min-width: 40px;
-      min-height: 40px;
-      font-size: 6vw;
-      font-weight: bold;
-      color: #bb7894;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
       cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      transition: background-color 0.3s;
-      pointer-events: all;
     }
 
-    .nav-button:hover {
-      background-color: rgba(255, 255, 255, 0.8);
+    #prev-btn {
+      left: 10px;
+    }
+
+    #next-btn {
+      right: 10px;
+    }
+
+    #back-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255,255,255,0.7);
+      padding: 10px 16px;
+      border-radius: 20px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
-  <button class="back-button" onclick="goHome()">←</button>
-  <div id="gallery" class="gallery-page"></div>
-  <div class="nav-buttons">
-    <button class="nav-button" onclick="prevPage()">◀</button>
-    <button class="nav-button" onclick="nextPage()">▶</button>
-  </div>
+  <button id="back-btn" onclick="window.location.href='index.html'">Back</button>
+  <button id="prev-btn" class="nav-btn" onclick="changePage(-1)">◀</button>
+  <button id="next-btn" class="nav-btn" onclick="changePage(1)">▶</button>
+
+  <iframe id="page-frame" src="page1.html"></iframe>
 
   <script>
-    let images = [];
-    let currentPage = 0;
-    const imagesPerPage = 3;
+    let currentPage = 1;
 
-    function fetchImages() {
-      fetch('/images')
-        .then(res => res.json())
-        .then(data => {
-          images = data;
-          renderPage();
+    function changePage(delta) {
+      const nextPage = currentPage + delta;
+      fetch(`page${nextPage}.html`, { method: 'HEAD' })
+        .then(response => {
+          if (response.ok) {
+            currentPage = nextPage;
+            document.getElementById('page-frame').src = `page${currentPage}.html`;
+          }
         });
     }
-
-    function renderPage() {
-      const gallery = document.getElementById('gallery');
-      gallery.innerHTML = '';
-
-      const start = currentPage * imagesPerPage;
-      const end = start + imagesPerPage;
-      const pageImages = images.slice(start, end);
-
-      pageImages.forEach((img, i) => {
-        const ext = img.split('.').pop().toLowerCase();
-        const src = `/uploads/${img}?t=${Date.now()}`;
-        let el;
-
-        if (["mp4", "webm"].includes(ext)) {
-          el = document.createElement("video");
-          el.src = src;
-          el.controls = true;
-        } else {
-          el = document.createElement("img");
-          el.src = src;
-        }
-
-        el.classList.add('gallery-item');
-
-        const heights = ['30vh', '27vh', '25vh'];
-        el.style.maxHeight = heights[i % heights.length];
-
-        gallery.appendChild(el);
-      });
-    }
-
-    function nextPage() {
-      if ((currentPage + 1) * imagesPerPage < images.length) {
-        currentPage++;
-        renderPage();
-      }
-    }
-
-    function prevPage() {
-      if (currentPage > 0) {
-        currentPage--;
-        renderPage();
-      }
-    }
-
-    function goHome() {
-      window.location.href = '/';
-    }
-
-    window.onload = fetchImages;
   </script>
 </body>
 </html>

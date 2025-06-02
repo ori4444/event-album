@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Album - Page 1</title>
+  <style>
+    body {
+      margin: 0;
+      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1748875751/backround1_ihblf4.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .photo {
+      position: absolute;
+      width: 28%;
+      height: auto;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 6px solid white;
+      padding: 24px 2px; /* vertical more than horizontal */
+      background: white;
+    }
+
+    .photo1 { top: 23%; left: 10%; transform: rotate(-2deg); width: 48%;
+        height: auto;}
+    .photo2 { top: 12%; right: 9%; transform: rotate(10deg); width: 48%;
+        height: auto;}
+    .photo3 { bottom: 20%; left: 13%; transform: rotate(1.5deg); width: 38%;
+        height: auto;}
+    .photo4 { bottom: 26%; right: 13%; transform: rotate(-2.5deg); width: 38%;
+        height: auto;}
+
+    .nav {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav a {
+      background: rgba(255, 255, 255, 0.7);
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #333;
+      border-radius: 20px;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <img id="p1" class="photo photo1" />
+  <img id="p2" class="photo photo2" />
+  <img id="p3" class="photo photo3" />
+  <img id="p4" class="photo photo4" />
+
+  <script>
+    fetch('/images')
+      .then(res => res.json())
+      .then(urls => {
+        if (urls.length < 4) {
+          document.body.innerHTML = '<h2 style="text-align:center;margin-top:40vh;font-family:sans-serif;color:#444;">Waiting for more images to complete this page...</h2>';
+          return;
+        }
+
+        const images = urls.slice(0, 4);
+        images.forEach((url, index) => {
+          const img = document.getElementById(`p${index + 1}`);
+          if (img) img.src = url;
+        });
+      });
+  </script>
+</body>
+</html>
