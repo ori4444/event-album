@@ -20,16 +20,9 @@
       align-items: center;
     }
 
-    .top-line,
-    .bottom-line {
-      width: 100%;
-      border-top: 1px solid #ccc;
-      margin: 0;
-    }
-
     .upload-section {
       position: absolute;
-      bottom: 10px;
+      bottom: 40px;
       width: 100%;
       display: flex;
       justify-content: center;
@@ -53,7 +46,7 @@
     }
 
     .album-image-btn {
-      width: 300px;
+      width: 200px;
       height: auto;
       cursor: pointer;
       display: none;
@@ -63,9 +56,6 @@
 
 <body>
   <img id="albumBtn" class="album-image-btn" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748878310/album_l6prar.png" alt="Open Album" />
-
-  <div class="top-line"></div>
-  <div class="bottom-line"></div>
 
   <div class="upload-section">
     <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
