@@ -1,83 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Album</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: #f4f4f4;
-      font-family: 'Segoe UI', sans-serif;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wedding Album</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f4f4f4;
+            font-family: 'Segoe UI', sans-serif;
+            position: relative;
+        }
 
-    #page-frame {
-      width: 100vw;
-      height: 100vh;
-      border: none;
-    }
+        #page-frame {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            display: none;
+        }
 
-    .nav-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: rgba(255, 255, 255, 0.6);
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      font-size: 24px;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.6);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
 
-    #prev-btn {
-      left: 10px;
-    }
+        #prev-btn {
+            left: 10px;
+        }
 
-    #next-btn {
-      right: 10px;
-    }
+        #next-btn {
+            right: 10px;
+        }
 
-    #back-btn {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(255,255,255,0.7);
-      padding: 10px 16px;
-      border-radius: 20px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-  </style>
+        #back-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px 16px;
+            border-radius: 20px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        #loader {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #555;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <button id="back-btn" onclick="window.location.href='index.html'">Back</button>
-  <button id="prev-btn" class="nav-btn" onclick="changePage(-1)">◀</button>
-  <button id="next-btn" class="nav-btn" onclick="changePage(1)">▶</button>
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
 
-  <iframe id="page-frame" src="page1.html"></iframe>
+    <button id="back-btn" onclick="window.location.href='index.html'">Back</button>
+    <button id="prev-btn" class="nav-btn" onclick="changePage(-1)">◀</button>
+    <button id="next-btn" class="nav-btn" onclick="changePage(1)">▶</button>
 
-  <script>
-    let currentPage = 1;
+    <iframe id="page-frame" src=""></iframe>
 
-    function changePage(delta) {
-      const nextPage = currentPage + delta;
-      fetch(`page${nextPage}.html`, { method: 'HEAD' })
-        .then(response => {
-          if (response.ok) {
-            currentPage = nextPage;
-            document.getElementById('page-frame').src = `page${currentPage}.html`;
-          }
-        });
-    }
-  </script>
+    <script>
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('page-frame').style.display = 'block';
+        }
+
+        const pageFrame = document.getElementById('page-frame');
+        let currentPage = 0;
+
+        function loadPages(images) {
+            const pageLayouts = [4, 4, 4, 4];
+            const totalPages = Math.min(Math.floor(images.length / 4), pageLayouts.length);
+            const pages = [];
+            for (let i = 0; i < totalPages; i++) {
+                const start = i * 4;
+                const pageImages = images.slice(start, start + 4);
+                pages.push({ name: `page${(i % 4) + 1}.html`, images: pageImages });
+            }
+            return pages;
+        }
+
+        function changePage(offset) {
+            console.log("🔄 changePage called with offset:", offset);
+            fetch('/images')
+                .then(res => {
+                    console.log("📥 Fetch /images status:", res.status);
+                    return res.json();
+                })
+                .then(images => {
+                    console.log("🖼️ Images received:", images);
+                    const pages = loadPages(images);
+                    console.log("📄 Pages prepared:", pages);
+
+                    if (pages.length === 0) {
+                        console.warn("⚠️ No pages to show.");
+                        return;
+                    }
+
+                    currentPage = (currentPage + offset + pages.length) % pages.length;
+                    const selectedPage = pages[currentPage];
+                    console.log("📌 Current page index:", currentPage);
+                    console.log("📂 Will load:", selectedPage.name, "with images:", selectedPage.images);
+
+                    // בדיקת iframe
+                    if (!pageFrame) {
+                        console.error("❗ pageFrame is null or undefined");
+                        return;
+                    }
+
+                    pageFrame.src = selectedPage.name;
+
+                    pageFrame.onload = () => {
+                        console.log("✅ iframe loaded:", selectedPage.name);
+
+                        try {
+                            const win = pageFrame.contentWindow;
+                            if (!win) {
+                                console.error("❗ contentWindow is null");
+                                return;
+                            }
+
+                            console.log("📤 Posting message to iframe:", selectedPage.images);
+                            win.postMessage({ images: selectedPage.images }, '*');
+
+                            hideLoader();
+                        } catch (err) {
+                            console.error("💥 Error posting message to iframe:", err);
+                        }
+                    };
+                })
+                .catch(err => {
+                    console.error("💥 Error in changePage:", err);
+                });
+        }
+
+
+
+        window.onload = () => {
+            console.log("🌐 window.onload triggered");
+            changePage(0);
+        };
+    </script>
+
+    <script src="album-loader.js"></script>
 </body>
+
 </html>

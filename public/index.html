@@ -6,9 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
+
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Playfair Display', serif;
       background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1748877012/main_backround_qlahla.webp') no-repeat center center fixed;
       background-size: cover;
       overflow-x: hidden;
@@ -22,23 +24,26 @@
 
     .upload-section {
       position: absolute;
-      bottom: 40px;
+      bottom: 650px;
       width: 100%;
       display: flex;
       justify-content: center;
     }
 
     .upload-btn {
+      font-family: 'Playfair Display', serif;
+      position: relative;
+      top: -20px;
       background-color: rgba(255, 255, 255, 0.2);
-      color: #777;
+      color: #9c7b62;
       padding: 14px 28px;
-      border: 1px solid #e6c1cc;
+      border: 1px solid #d6c1aa;
       border-radius: 25px;
-      font-size: 18px;
+      font-size: 20px;
       cursor: pointer;
       transition: background-color 0.3s, border-color 0.3s;
       text-decoration: none;
-      margin: 10px;
+      margin: 0;
     }
 
     input[type="file"] {
@@ -46,16 +51,29 @@
     }
 
     .album-image-btn {
-      width: 200px;
+      width: 250px;
       height: auto;
       cursor: pointer;
       display: none;
+      transform: rotate(5deg);
+    }
+
+    .header-title {
+      position: absolute;
+      top: 50px;
+      font-size: 60px;
+      color: #9c7b62;
+      font-family: 'Playfair Display', serif;
+      letter-spacing: 2px;
     }
   </style>
 </head>
 
 <body>
-  <img id="albumBtn" class="album-image-btn" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748878310/album_l6prar.png" alt="Open Album" />
+  <div class="header-title">the wedding</div>
+
+  <img id="albumBtn" class="album-image-btn"
+    src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748878310/album_l6prar.png" alt="Open Album" />
 
   <div class="upload-section">
     <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
