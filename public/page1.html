@@ -85,7 +85,7 @@
       max-height: 90px;
       border: none;
       border-radius: 50%;
-      font-size: 57vw;
+      font-size: 97vw;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -129,7 +129,7 @@
       .upload-btn {
         width: 12vw;
         height: 12vw;
-        font-size: 20vw;
+        font-size: 34vw;
       }
 
       .upload-label {
@@ -140,13 +140,19 @@
         font-size: 6vw;
       }
     }
+
+    body.landscape {
+      flex-direction: column;
+    }
   </style>
   <script>
-    window.addEventListener('orientationchange', () => {
-      setTimeout(() => {
-        location.reload();
-      }, 300);
-    });
+    function handleResizeOrOrientation() {
+      document.body.classList.toggle('landscape', window.innerWidth > window.innerHeight);
+    }
+
+    window.addEventListener('orientationchange', handleResizeOrOrientation);
+    window.addEventListener('resize', handleResizeOrOrientation);
+    window.addEventListener('DOMContentLoaded', handleResizeOrOrientation);
   </script>
 </head>
 
