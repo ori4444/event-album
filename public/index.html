@@ -31,6 +31,11 @@
       z-index: -1;
     }
 
+    .header-title, .upload-section {
+      opacity: 0;
+      transition: opacity 1s ease-in;
+    }
+
     .header-title {
       text-align: center;
       font-size: 6vw;
@@ -46,13 +51,13 @@
       display: block;
       height: 4px;
       background: white;
-      width: 80%;
+      width: 85%;
       margin: 1vh auto;
     }
 
     .album-container {
       position: absolute;
-      top: 55%;
+      top: 68%;
       left: 50%;
       transform: translate(-50%, -50%);
       display: flex;
@@ -68,13 +73,13 @@
     .upload-btn {
       background: none;
       color: white;
-      width: 16vw;
-      height: 16vw;
-      max-width: 80px;
-      max-height: 80px;
+      width: 18vw;
+      height: 18vw;
+      max-width: 90px;
+      max-height: 90px;
       border: none;
       border-radius: 50%;
-      font-size: 8vw;
+      font-size: 9vw;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -98,18 +103,14 @@
 </head>
 
 <body>
-  <video id="intro-video" autoplay muted playsinline class="background-video">
-    <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748911483/%D7%90%D7%9E%D7%90-3-highlight_iicgkw.mp4" type="video/mp4">
-  </video>
-
-  <video id="loop-video" muted loop playsinline class="background-video" style="display: none;">
-    <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748912277/%D7%A8%D7%A7%D7%A2-highlight_lhjkmh.mp4" type="video/mp4">
+  <video autoplay muted loop playsinline class="background-video">
+    <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748913728/%D7%A8%D7%A7%D7%A2_wknf4o.mp4" type="video/mp4">
   </video>
 
   <div class="album-container">
-    <div class="header-title">yanir &amp; shir</div>
+    <div class="header-title" id="headerTitle">yanir &amp; shir</div>
 
-    <div class="upload-section">
+    <div class="upload-section" id="uploadSection">
       <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
         <label class="upload-btn" for="fileInput">+</label>
         <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="uploadImage()" />
@@ -117,30 +118,30 @@
     </div>
 
     <img id="albumBtn" class="album-image-btn"
-      src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748878310/album_l6prar.png" alt="Open Album" />
+      src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748914028/b9f4bd58-a0d3-458a-8a48-1ba077f6a660_hji2wj.png" alt="Open Album" />
   </div>
 
   <script>
-    const intro = document.getElementById('intro-video');
-    const loop = document.getElementById('loop-video');
-
-    intro.addEventListener('ended', () => {
-      intro.style.display = 'none';
-      loop.style.display = 'block';
-      loop.play();
-    });
-
     function uploadImage() {
       document.getElementById('uploadForm').submit();
     }
+
+    const albumBtn = document.getElementById('albumBtn');
+    albumBtn.onload = () => {
+      albumBtn.style.display = 'block';
+      albumBtn.onclick = () => window.location.href = 'album.html';
+      document.getElementById('headerTitle').style.opacity = '1';
+      document.getElementById('uploadSection').style.opacity = '1';
+    };
 
     fetch('/images')
       .then(res => res.json())
       .then(data => {
         if (data.length >= 4) {
-          const albumBtn = document.getElementById('albumBtn');
-          albumBtn.style.display = 'block';
-          albumBtn.onclick = () => window.location.href = 'album.html';
+          albumBtn.src = albumBtn.src; // force load event trigger
         }
       });
   </script>
+</body>
+
+</html>
