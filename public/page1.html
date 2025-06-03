@@ -53,6 +53,8 @@
       letter-spacing: 0.3vw;
       margin-bottom: 1vh;
       position: relative;
+      opacity: 0;
+      transition: opacity 1s ease-in;
     }
 
     .header-title::before,
@@ -70,6 +72,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      opacity: 0;
+      transition: opacity 1s ease-in;
     }
 
     .upload-btn {
@@ -81,7 +85,7 @@
       max-height: 90px;
       border: none;
       border-radius: 50%;
-      font-size: 34vw;
+      font-size: 57vw;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -101,12 +105,49 @@
       height: auto;
       cursor: pointer;
       transition: opacity 1s ease-in;
+      opacity: 0;
     }
 
     input[type="file"] {
       display: none;
     }
+
+    @media (orientation: landscape) {
+      body {
+        flex-direction: column;
+      }
+
+      .left-half, .right-half {
+        width: 100vw;
+        height: 50vh;
+      }
+
+      .album-image-btn {
+        width: 30vw;
+      }
+
+      .upload-btn {
+        width: 12vw;
+        height: 12vw;
+        font-size: 20vw;
+      }
+
+      .upload-label {
+        font-size: 2.5vw;
+      }
+
+      .header-title {
+        font-size: 6vw;
+      }
+    }
   </style>
+  <script>
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        location.reload();
+      }, 300);
+    });
+  </script>
 </head>
 
 <body>
