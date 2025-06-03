@@ -10,7 +10,7 @@
 
     html, body {
       margin: 0;
-      padding: 0;
+      padding: env(safe-area-inset);
       width: 100%;
       height: 100%;
       font-family: 'Playfair Display', serif;
@@ -18,6 +18,7 @@
 
     body {
       position: relative;
+      overflow: hidden;
     }
 
     .background-video {
@@ -33,14 +34,25 @@
     .header-title {
       text-align: center;
       font-size: 6vw;
-      color: #9c7b62;
+      color: white;
       letter-spacing: 0.3vw;
-      margin-top: 5vh;
+      margin-bottom: 1vh;
+      position: relative;
+    }
+
+    .header-title::before,
+    .header-title::after {
+      content: "";
+      display: block;
+      height: 4px;
+      background: white;
+      width: 80%;
+      margin: 1vh auto;
     }
 
     .album-container {
       position: absolute;
-      top: 50%;
+      top: 55%;
       left: 50%;
       transform: translate(-50%, -50%);
       display: flex;
@@ -49,30 +61,34 @@
       width: 100%;
     }
 
+    .upload-section {
+      margin-bottom: 5vh;
+    }
+
+    .upload-btn {
+      background: none;
+      color: white;
+      width: 16vw;
+      height: 16vw;
+      max-width: 80px;
+      max-height: 80px;
+      border: none;
+      border-radius: 50%;
+      font-size: 8vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-decoration: none;
+    }
+
     .album-image-btn {
       width: 45vw;
       max-width: 300px;
       height: auto;
       cursor: pointer;
       display: none;
-      transform: rotate(5deg);
-    }
-
-    .upload-section {
-      margin-top: 4vh;
-    }
-
-    .upload-btn {
-      font-family: 'Playfair Display', serif;
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #9c7b62;
-      padding: 2vh 5vw;
-      border: 1px solid #d6c1aa;
-      border-radius: 25px;
-      font-size: 4vw;
-      cursor: pointer;
-      transition: background-color 0.3s, border-color 0.3s;
-      text-decoration: none;
     }
 
     input[type="file"] {
@@ -87,21 +103,21 @@
   </video>
 
   <video id="loop-video" muted loop playsinline class="background-video" style="display: none;">
-    <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748911483/%D7%90%D7%9E%D7%90-3-highlight_iicgkw.mp4#t=5" type="video/mp4">
+    <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748912277/%D7%A8%D7%A7%D7%A2-highlight_lhjkmh.mp4" type="video/mp4">
   </video>
 
-  <div class="header-title">the wedding</div>
-
   <div class="album-container">
-    <img id="albumBtn" class="album-image-btn"
-      src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748878310/album_l6prar.png" alt="Open Album" />
+    <div class="header-title">yanir &amp; shir</div>
 
     <div class="upload-section">
       <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
-        <label class="upload-btn" for="fileInput">Upload</label>
+        <label class="upload-btn" for="fileInput">+</label>
         <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="uploadImage()" />
       </form>
     </div>
+
+    <img id="albumBtn" class="album-image-btn"
+      src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748878310/album_l6prar.png" alt="Open Album" />
   </div>
 
   <script>
@@ -128,6 +144,3 @@
         }
       });
   </script>
-</body>
-
-</html>
