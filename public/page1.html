@@ -1,56 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Album - Page 1</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+  <title>Home</title>
   <style>
-    body {
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
+
+    html, body {
       margin: 0;
-      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1748875751/backround1_ihblf4.png') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
+      padding: env(safe-area-inset);
+      width: 100%;
+      height: 100%;
+      font-family: 'Playfair Display', serif;
+    }
+
+    body {
+      position: relative;
       overflow: hidden;
+    }
+
+    @media screen and (orientation: landscape) {
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: black;
+        color: white;
+        font-size: 5vw;
+        text-align: center;
+      }
+
+      .album-container,
+      .background-video {
+        display: none;
+      }
+
+      body::before {
+        content: "Please rotate your device to portrait mode 📱";
+      }
+    }
+
+    .background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .header-title, .upload-section, .album-image-btn {
+      opacity: 0;
+      transition: opacity 1s ease-in;
+    }
+
+    .header-title {
+      text-align: center;
+      font-size: 6vw;
+      color: white;
+      letter-spacing: 0.3vw;
+      margin-bottom: 1vh;
       position: relative;
     }
 
-    .photo {
-      position: absolute;
-      width: 28%;
-      height: auto;
-      border-radius: 8px;
-      object-fit: cover;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      border: 6px solid white;
-      padding: 24px 2px;
+    .header-title::before,
+    .header-title::after {
+      content: "";
+      display: block;
+      height: 2px;
       background: white;
+      width: 85vw;
+      margin: 1vh auto;
     }
 
-    .photo1 { top: 23%; left: 10%; transform: rotate(-2deg); width: 28%; }
-    .photo2 { top: 12%; right: 9%; transform: rotate(10deg); width: 34%; }
-    .photo3 { bottom: 20%; left: 13%; transform: rotate(1.5deg); width: 22%; }
-    .photo4 { bottom: 26%; right: 13%; transform: rotate(-2.5deg); width: 31%; }
+    .album-container {
+      position: absolute;
+      top: 72%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .upload-section {
+      margin-bottom: 2vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .upload-btn {
+      background: none;
+      color: white;
+      width: 18vw;
+      height: 18vw;
+      max-width: 90px;
+      max-height: 90px;
+      border: none;
+      border-radius: 50%;
+      font-size: 20vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-decoration: none;
+    }
+
+    .upload-label {
+      margin-top: 1vh;
+      color: white;
+      font-size: 4vw;
+    }
+
+    .album-image-btn {
+      width: 45vw;
+      max-width: 300px;
+      height: auto;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 1s ease-in;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
   </style>
 </head>
+
 <body>
-  <img id="p1" class="photo photo1" />
-  <img id="p2" class="photo photo2" />
-  <img id="p3" class="photo photo3" />
-  <img id="p4" class="photo photo4" />
+  <video autoplay muted loop playsinline class="background-video">
+    <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748913728/%D7%A8%D7%A7%D7%A2_wknf4o.mp4" type="video/mp4">
+  </video>
+
+  <div class="album-container">
+    <div class="header-title" id="headerTitle">yanir &amp; shir</div>
+
+    <div class="upload-section" id="uploadSection">
+      <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+        <label class="upload-btn" for="fileInput">+</label>
+        <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="uploadImage()" />
+      </form>
+      <div class="upload-label">Upload</div>
+    </div>
+
+    <img id="albumBtn" class="album-image-btn"
+      src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748914028/b9f4bd58-a0d3-458a-8a48-1ba077f6a660_hji2wj.png" alt="Open Album" />
+  </div>
 
   <script>
-    window.addEventListener('message', (event) => {
-      const urls = event.data.images;
-      if (!urls || urls.length < 4) {
-        document.body.innerHTML = '<h2 style="text-align:center;margin-top:40vh;font-family:sans-serif;color:#444;">Waiting for more images...</h2>';
-        return;
-      }
-      for (let i = 0; i < 4; i++) {
-        const img = document.getElementById(`p${i + 1}`);
-        if (img) img.src = urls[i];
+    function uploadImage() {
+      document.getElementById('uploadForm').submit();
+    }
+
+    const albumBtn = document.getElementById('albumBtn');
+    const headerTitle = document.getElementById('headerTitle');
+    const uploadSection = document.getElementById('uploadSection');
+
+    albumBtn.onload = () => {
+      setTimeout(() => {
+        albumBtn.style.opacity = '1';
+        headerTitle.style.opacity = '1';
+        uploadSection.style.opacity = '1';
+        albumBtn.onclick = () => window.location.href = 'album.html';
+      }, 200);
+    };
+
+    fetch('/images')
+      .then(res => res.json())
+      .then(data => {
+        if (data.length >= 4) {
+          albumBtn.src = albumBtn.src;
+        }
+      });
+
+    window.addEventListener("orientationchange", () => {
+      if (window.orientation === 90 || window.orientation === -90) {
+        alert("Please rotate your device to portrait mode 📱");
       }
     });
   </script>
 </body>
+
 </html>
