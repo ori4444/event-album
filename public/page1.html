@@ -1,184 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Home</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
-
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-
-  html, body {
-    margin: 0; padding: 0;
-    width: 100vw; height: 100vh;
-    max-height: 100vh;
-    overflow: hidden;
-    font-family: 'Playfair Display', serif;
-    background-color: black;
-  }
-
-  body {
-    position: relative;
-  }
-
-  .background-video {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-    z-index: 1000;
-    clip-path: inset(0 0 50% 0);
-  }
-
-  .header-title,
-  .header-date,
-  .button-wrapper {
-    position: relative;
-    z-index: 1100;
-    color: #f5e6b3;
-    opacity: 0;
-    transition: opacity 6s ease;
-    user-select: none;
-  }
-
-  .visible {
-    opacity: 1 !important;
-  }
-
-  .header-title {
-    position: absolute;
-    top: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 10vw;
-    font-weight: 600;
-    letter-spacing: 0.5vw;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .header-date {
-    position: absolute;
-    top: calc(48% + 5vw);
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 4vw;
-    font-family: 'Playfair Display', serif;
-    white-space: nowrap;
-  }
-
-  .button-wrapper {
-    position: absolute;
-    bottom: 3vh;
-    left: 0; right: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    background: transparent;
-  }
-
-  .album-container {
-    display: flex;
-    justify-content: center;
-    gap: 6vw;
-    padding: 0 3vw;
-    width: 100%;
-  }
-
-  .upload-section,
-  .album-button {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    cursor: pointer;
-    text-decoration: none;
-    border: 0.5vw solid #f5e6b3;
-    border-radius: 50%;
-    padding: 1vw;
-    transition: box-shadow 0.3s ease;
-  }
-
-  .upload-section:hover,
-  .album-button:hover {
-    box-shadow: 0 0 1vw 0.25vw rgba(245, 230, 179, 0.6);
-  }
-
-  .upload-btn {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    position: relative;
-    border-radius: 50%;
-    overflow: hidden;
-  }
-
-  .upload-btn img,
-  .album-image-btn {
-    width: 5.5vw; /* חצי מהגודל הקודם */
-    height: auto;
-    border-radius: 50%;
-    filter: brightness(1.2);
-    display: block;
-    position: relative;
-    z-index: 1;
-  }
-
-  input[type="file"] {
-    display: none;
-  }
-</style>
-</head>
-
-<body>
-  <div class="video-container">
-    <video autoplay muted loop playsinline class="background-video" id="backgroundVideo">
-      <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748954137/Untitled_ufamiv.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
-
-  <div class="header-title" id="headerTitle">yanir &amp; shir</div>
-  <div class="header-date" id="headerDate">19/08/2025</div>
-
-  <div class="button-wrapper" id="buttonWrapper">
-    <div class="album-container">
-      <div class="upload-section" id="uploadSection">
-        <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
-          <label class="upload-btn" for="fileInput">
-            <img src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955300/ChatGPT_Image_Jun_3_2025_03_54_31_PM_ga6ezr.png" alt="Upload" />
-          </label>
-          <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="uploadImage()" />
-        </form>
-      </div>
-
-      <div class="album-button" onclick="window.location.href='album.html'">
-        <img id="albumBtn" class="album-image-btn"
-          src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955283/ChatGPT_Image_Jun_3_2025_03_53_32_PM_ysx81b.png"
-          alt="Open Album" />
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function uploadImage() {
-      document.getElementById('uploadForm').submit();
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Album - Page 1</title>
+  <style>
+    body {
+      margin: 0;
+      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1748875751/backround1_ihblf4.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
     }
 
-    window.addEventListener('load', () => {
-      document.getElementById('headerTitle').classList.add('visible');
-      document.getElementById('headerDate').classList.add('visible');
-      document.getElementById('buttonWrapper').classList.add('visible');
+    .photo {
+      position: absolute;
+      width: 28%;
+      height: auto;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 6px solid white;
+      padding: 24px 2px;
+      background: white;
+    }
+
+    .photo1 { top: 23%; left: 10%; transform: rotate(-2deg); width: 48%; }
+    .photo2 { top: 12%; right: 9%; transform: rotate(10deg); width: 48%; }
+    .photo3 { bottom: 20%; left: 13%; transform: rotate(1.5deg); width: 38%; }
+    .photo4 { bottom: 26%; right: 13%; transform: rotate(-2.5deg); width: 38%; }
+  </style>
+</head>
+<body>
+  <img id="p1" class="photo photo1" />
+  <img id="p2" class="photo photo2" />
+  <img id="p3" class="photo photo3" />
+  <img id="p4" class="photo photo4" />
+
+  <script>
+    window.addEventListener('message', (event) => {
+      const urls = event.data.images;
+      if (!urls || urls.length < 4) {
+        document.body.innerHTML = '<h2 style="text-align:center;margin-top:40vh;font-family:sans-serif;color:#444;">Waiting for more images...</h2>';
+        return;
+      }
+      for (let i = 0; i < 4; i++) {
+        const img = document.getElementById(`p${i + 1}`);
+        if (img) img.src = urls[i];
+      }
     });
   </script>
 </body>
-
 </html>
