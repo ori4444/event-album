@@ -31,7 +31,7 @@
       z-index: -1;
     }
 
-    .header-title, .upload-section {
+    .header-title, .upload-section, .album-image-btn {
       opacity: 0;
       transition: opacity 1s ease-in;
     }
@@ -49,15 +49,15 @@
     .header-title::after {
       content: "";
       display: block;
-      height: 4px;
+      height: 2px;
       background: white;
-      width: 85%;
+      width: 85vw;
       margin: 1vh auto;
     }
 
     .album-container {
       position: absolute;
-      top: 68%;
+      top: 72%;
       left: 50%;
       transform: translate(-50%, -50%);
       display: flex;
@@ -67,7 +67,10 @@
     }
 
     .upload-section {
-      margin-bottom: 5vh;
+      margin-bottom: 2vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .upload-btn {
@@ -79,7 +82,7 @@
       max-height: 90px;
       border: none;
       border-radius: 50%;
-      font-size: 9vw;
+      font-size: 20vw;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -88,12 +91,19 @@
       text-decoration: none;
     }
 
+    .upload-label {
+      margin-top: 1vh;
+      color: white;
+      font-size: 4vw;
+    }
+
     .album-image-btn {
       width: 45vw;
       max-width: 300px;
       height: auto;
       cursor: pointer;
-      display: none;
+      opacity: 0;
+      transition: opacity 1s ease-in;
     }
 
     input[type="file"] {
@@ -115,6 +125,7 @@
         <label class="upload-btn" for="fileInput">+</label>
         <input type="file" name="image" id="fileInput" accept="image/*,video/*" onchange="uploadImage()" />
       </form>
+      <div class="upload-label">Upload</div>
     </div>
 
     <img id="albumBtn" class="album-image-btn"
@@ -127,18 +138,23 @@
     }
 
     const albumBtn = document.getElementById('albumBtn');
+    const headerTitle = document.getElementById('headerTitle');
+    const uploadSection = document.getElementById('uploadSection');
+
     albumBtn.onload = () => {
-      albumBtn.style.display = 'block';
-      albumBtn.onclick = () => window.location.href = 'album.html';
-      document.getElementById('headerTitle').style.opacity = '1';
-      document.getElementById('uploadSection').style.opacity = '1';
+      setTimeout(() => {
+        albumBtn.style.opacity = '1';
+        headerTitle.style.opacity = '1';
+        uploadSection.style.opacity = '1';
+        albumBtn.onclick = () => window.location.href = 'album.html';
+      }, 200);
     };
 
     fetch('/images')
       .then(res => res.json())
       .then(data => {
         if (data.length >= 4) {
-          albumBtn.src = albumBtn.src; // force load event trigger
+          albumBtn.src = albumBtn.src;
         }
       });
   </script>
