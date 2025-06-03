@@ -8,9 +8,14 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
 
+  *, *::before, *::after {
+    box-sizing: border-box; /* חשוב למנוע גלילה מיותרת */
+  }
+
   html, body {
     margin: 0; padding: 0;
     width: 100vw; height: 100vh;
+    max-height: 100vh;
     overflow: hidden; /* מניעת גלילה אופקית ואנכית */
     font-family: 'Playfair Display', serif;
     background-color: black;
@@ -38,6 +43,7 @@
     color: #f5e6b3;
     opacity: 0;
     transition: opacity 6s ease;
+    user-select: none;
   }
 
   .visible {
@@ -46,19 +52,19 @@
 
   .header-title {
     position: absolute;
-    top: 50%;
+    top: 48%; /* מעט מוריד כדי לא לחרוג */
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 10vw;
     font-weight: 600;
     letter-spacing: 0.5vw;
     text-align: center;
-    white-space: nowrap; /* כדי שלא יתחלק לשורות */
+    white-space: nowrap;
   }
 
   .header-date {
     position: absolute;
-    top: calc(50% + 6vw);
+    top: calc(48% + 5vw); /* מתואם עם הכותרת */
     left: 50%;
     transform: translateX(-50%);
     font-size: 4vw;
@@ -97,7 +103,6 @@
     border: 0.5vw solid #f5e6b3;
     border-radius: 50%;
     padding: 1vw;
-    box-sizing: content-box;
     transition: box-shadow 0.3s ease;
   }
 
@@ -118,7 +123,7 @@
 
   .upload-btn img,
   .album-image-btn {
-    width: 22vw;
+    width: 11vw; /* חצי מהקודם */
     height: auto;
     border-radius: 50%;
     filter: brightness(1.2);
