@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Home</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
@@ -14,52 +14,41 @@
       width: 100%;
       height: 100%;
       font-family: 'Playfair Display', serif;
-    }
-
-    body {
-      position: relative;
       overflow: hidden;
     }
 
-    @media screen and (orientation: landscape) {
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: black;
-        color: white;
-        font-size: 5vw;
-        text-align: center;
-      }
-
-      .album-container,
-      .background-video {
-        display: none;
-      }
-
-      body::before {
-        content: "Please rotate your device to portrait mode 📱";
-      }
+    body {
+      display: flex;
+      flex-direction: row;
     }
 
-    .background-video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
+    .left-half {
+      width: 50vw;
       height: 100vh;
-      object-fit: cover;
-      z-index: -1;
+      overflow: hidden;
     }
 
-    .header-title, .upload-section, .album-image-btn {
-      opacity: 0;
-      transition: opacity 1s ease-in;
+    .left-half video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .right-half {
+      width: 50vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: transparent;
+      position: relative;
     }
 
     .header-title {
       text-align: center;
-      font-size: 6vw;
+      font-size: 4vw;
       color: white;
       letter-spacing: 0.3vw;
       margin-bottom: 1vh;
@@ -72,23 +61,12 @@
       display: block;
       height: 2px;
       background: white;
-      width: 85vw;
+      width: 85%;
       margin: 1vh auto;
     }
 
-    .album-container {
-      position: absolute;
-      top: 72%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-
     .upload-section {
-      margin-bottom: 2vh;
+      margin: 2vh 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -103,19 +81,18 @@
       max-height: 90px;
       border: none;
       border-radius: 50%;
-      font-size: 20vw;
+      font-size: 34vw;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      transition: background-color 0.3s;
       text-decoration: none;
     }
 
     .upload-label {
       margin-top: 1vh;
       color: white;
-      font-size: 4vw;
+      font-size: 3vw;
     }
 
     .album-image-btn {
@@ -123,7 +100,6 @@
       max-width: 300px;
       height: auto;
       cursor: pointer;
-      opacity: 0;
       transition: opacity 1s ease-in;
     }
 
@@ -134,11 +110,13 @@
 </head>
 
 <body>
-  <video autoplay muted loop playsinline class="background-video">
-    <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748913728/%D7%A8%D7%A7%D7%A2_wknf4o.mp4" type="video/mp4">
-  </video>
+  <div class="left-half">
+    <video autoplay muted loop playsinline>
+      <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748913728/%D7%A8%D7%A7%D7%A2_wknf4o.mp4" type="video/mp4">
+    </video>
+  </div>
 
-  <div class="album-container">
+  <div class="right-half">
     <div class="header-title" id="headerTitle">yanir &amp; shir</div>
 
     <div class="upload-section" id="uploadSection">
@@ -178,12 +156,6 @@
           albumBtn.src = albumBtn.src;
         }
       });
-
-    window.addEventListener("orientationchange", () => {
-      if (window.orientation === 90 || window.orientation === -90) {
-        alert("Please rotate your device to portrait mode 📱");
-      }
-    });
   </script>
 </body>
 
