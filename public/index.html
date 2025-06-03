@@ -3,21 +3,26 @@
 
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>Home</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
 
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   html, body {
-    margin: 0; padding: env(safe-area-inset);
-    width: 100%; height: 100%;
+    margin: 0; padding: 0;
+    width: 100vw; height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
     font-family: 'Playfair Display', serif;
     background-color: black;
   }
 
   body {
     position: relative;
-    overflow: hidden;
   }
 
   .background-video {
@@ -38,6 +43,7 @@
     color: #f5e6b3;
     opacity: 0;
     transition: opacity 6s ease;
+    user-select: none;
   }
 
   .visible {
@@ -46,27 +52,29 @@
 
   .header-title {
     position: absolute;
-    top: 50%;
+    top: 48%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 7vw; /* הוגדל */
+    font-size: 10vw;
     font-weight: 600;
     letter-spacing: 0.5vw;
     text-align: center;
+    white-space: nowrap;
   }
 
   .header-date {
     position: absolute;
-    top: calc(50% + 6vw);
+    top: calc(48% + 5vw);
     left: 50%;
     transform: translateX(-50%);
-    font-size: 3vw;
+    font-size: 4vw;
     font-family: 'Playfair Display', serif;
+    white-space: nowrap;
   }
 
   .button-wrapper {
     position: absolute;
-    bottom: 3%;
+    bottom: 3vh;
     left: 0; right: 0;
     display: flex;
     flex-direction: column;
@@ -78,7 +86,7 @@
   .album-container {
     display: flex;
     justify-content: center;
-    gap: 10vw;
+    gap: 6vw;
     padding: 0 3vw;
     width: 100%;
   }
@@ -92,16 +100,15 @@
     text-align: center;
     cursor: pointer;
     text-decoration: none;
-    border: 2px solid #f5e6b3;
+    border: 0.5vw solid #f5e6b3;
     border-radius: 50%;
-    padding: 5px;
-    box-sizing: content-box;
+    padding: 1vw;
     transition: box-shadow 0.3s ease;
   }
 
   .upload-section:hover,
   .album-button:hover {
-    box-shadow: 0 0 12px 3px rgba(245, 230, 179, 0.6);
+    box-shadow: 0 0 1vw 0.25vw rgba(245, 230, 179, 0.6);
   }
 
   .upload-btn {
@@ -116,8 +123,7 @@
 
   .upload-btn img,
   .album-image-btn {
-    width: 22vw; /* מוקטן */
-    max-width: 110px; /* מוקטן */
+    width: 5.5vw; /* חצי מהגודל הקודם */
     height: auto;
     border-radius: 50%;
     filter: brightness(1.2);
