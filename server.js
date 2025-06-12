@@ -6,7 +6,8 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
-const port = 3000;
+// Use the PORT provided by Railway (or 3000 locally)
+const port = process.env.PORT || 3000;
 
 // Cloudinary configuration
 cloudinary.config({
@@ -23,9 +24,9 @@ const storage = new CloudinaryStorage({
     allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4']
   }
 });
-
 const upload = multer({ storage });
 
+// PostgreSQL pool
 const pool = new Pool({
   connectionString: 'postgresql://postgres:jGilwsxTNfEruQtfzHzIyBZVugDQVvnv@shortline.proxy.rlwy.net:43346/railway',
   ssl: { rejectUnauthorized: false }
@@ -33,10 +34,19 @@ const pool = new Pool({
 
 app.use(cors());
 app.use(express.static('public'));
+app.use(express.json());
 
+// Health-check endpoint
+app.get('/', (req, res) => {
+  res.send('🟢 OK');
+});
+
+// Fetch images
 app.get('/images', async (req, res) => {
   try {
-    const result = await pool.query('SELECT url FROM "wedding-album" ORDER BY upload_time ASC');
+    const result = await pool.query(
+      'SELECT url FROM "wedding-album" ORDER BY upload_time ASC'
+    );
     res.json(result.rows.map(row => row.url));
   } catch (err) {
     console.error('Error retrieving images:', err);
@@ -44,7 +54,7 @@ app.get('/images', async (req, res) => {
   }
 });
 
-// תמיכה בהעלאת תמונה אחת בלבד
+// Upload single image
 app.post('/upload', upload.single('image'), async (req, res) => {
   console.log('Upload request received');
   console.log('req.file:', req.file);
@@ -55,20 +65,18 @@ app.post('/upload', upload.single('image'), async (req, res) => {
   }
 
   const now = new Date().toISOString();
+  const imageUrl = req.file.secure_url || req.file.path || req.file.url;
+
+  if (!imageUrl) {
+    console.error('Invalid file:', req.file);
+    return res.status(400).json({ success: false, message: 'Invalid file' });
+  }
 
   try {
-    const imageUrl = req.file.secure_url || req.file.path || req.file.url;
-
-    if (!imageUrl) {
-      console.error('Invalid file:', req.file);
-      return res.status(400).json({ success: false, message: 'Invalid file' });
-    }
-
     await pool.query(
       'INSERT INTO "wedding-album" (url, upload_time) VALUES ($1, $2)',
       [imageUrl, now]
     );
-
     res.json({ success: true, message: 'Upload complete' });
   } catch (err) {
     console.error('Error saving image to DB:', err);
@@ -76,6 +84,16 @@ app.post('/upload', upload.single('image'), async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+// Connect to the database first, then start the server
+pool
+  .connect()
+  .then(client => {
+    client.release();
+    app.listen(port, '0.0.0.0', () => {
+      console.log(`✅ Server running on port ${port}`);
+    });
+  })
+  .catch(err => {
+    console.error('❌ Failed to connect to DB:', err);
+    process.exit(1);
+  });

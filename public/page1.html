@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Album - Rope Fully Positioned</title>
+  <title>Wedding Album - Rope Precisely Positioned</title>
   <style>
     body {
       margin: 0;
@@ -21,7 +21,7 @@
 
     .hanger-wrapper-1 {
       position: absolute;
-      top: calc(50% - 45vmin); /* מיקום החבל של השורה הראשונה */
+      top: 10vmin; /* חבל ראשון בדיוק לפי הפדינג של השורה הראשונה */
       left: 0;
       width: 100vw;
       z-index: 0;
@@ -29,7 +29,7 @@
 
     .hanger-wrapper-2 {
       position: absolute;
-      top: calc(50% + 5vmin); /* מיקום החבל של השורה השנייה */
+      top: calc(10vmin + 42vmin + 8vmin); /* חבל שני לפי מיקום השורה השנייה */
       left: 0;
       width: 100vw;
       z-index: 0;
@@ -114,7 +114,7 @@
 
 <body>
 
-  <!-- שני החבלים, מחוץ לקונטיינר -->
+  <!-- חבלים בדיוק בגבהים הנכונים -->
   <div class="hanger-wrapper-1">
     <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
   </div>
