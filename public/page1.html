@@ -4,8 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Album - Rope Precisely Positioned</title>
+  <title>Wedding Album - Final Control Version</title>
   <style>
+    :root {
+      --container-height: 90vmin;
+      --hanger-offset: 10vmin; /* כאן תשנה לשלוט על גובה החוט */
+      --row-gap: 8vmin;
+      --image-height: 42vmin;
+    }
+
     body {
       margin: 0;
       background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1748875751/backround1_ihblf4.png') no-repeat center center fixed;
@@ -21,17 +28,17 @@
 
     .hanger-wrapper-1 {
       position: absolute;
-      top: 10vmin; /* חבל ראשון בדיוק לפי הפדינג של השורה הראשונה */
+      top: 93vmin;
       left: 0;
-      width: 100vw;
+      width: 100%;
       z-index: 0;
     }
 
     .hanger-wrapper-2 {
       position: absolute;
-      top: calc(10vmin + 42vmin + 8vmin); /* חבל שני לפי מיקום השורה השנייה */
+      top: 33vmin;
       left: 0;
-      width: 100vw;
+      width: 100%;
       z-index: 0;
     }
 
@@ -42,23 +49,22 @@
     }
 
     .container {
+      position: relative;
+      width: var(--container-height);
+      height: var(--container-height);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      width: 90vmin;
-      height: 90vmin;
-      gap: 8vw;
-      position: relative;
-      z-index: 1;
+      gap: var(--row-gap);
     }
 
     .row-wrapper {
-      position: relative;
       display: flex;
       justify-content: center;
-      gap: 4vw;
-      padding-top: 10vmin;
+      gap: 4vmin;
+      padding-top: var(--hanger-offset);
+      position: relative;
     }
 
     .image-wrapper {
@@ -114,7 +120,7 @@
 
 <body>
 
-  <!-- חבלים בדיוק בגבהים הנכונים -->
+  <!-- חבלים עם שליטה מלאה בגובה -->
   <div class="hanger-wrapper-1">
     <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
   </div>
