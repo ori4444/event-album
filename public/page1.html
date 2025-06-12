@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Album - Fully Fixed Version</title>
+  <title>Wedding Album - Rope Fully Positioned</title>
   <style>
     body {
       margin: 0;
@@ -16,6 +16,29 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
+    }
+
+    .hanger-wrapper-1 {
+      position: absolute;
+      top: calc(50% - 45vmin); /* מיקום החבל של השורה הראשונה */
+      left: 0;
+      width: 100vw;
+      z-index: 0;
+    }
+
+    .hanger-wrapper-2 {
+      position: absolute;
+      top: calc(50% + 5vmin); /* מיקום החבל של השורה השנייה */
+      left: 0;
+      width: 100vw;
+      z-index: 0;
+    }
+
+    .hanger-img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
     .container {
@@ -26,6 +49,8 @@
       width: 90vmin;
       height: 90vmin;
       gap: 8vw;
+      position: relative;
+      z-index: 1;
     }
 
     .row-wrapper {
@@ -34,15 +59,6 @@
       justify-content: center;
       gap: 4vw;
       padding-top: 10vmin;
-    }
-
-    .hanger-img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: auto;
-      z-index: 0;
     }
 
     .image-wrapper {
@@ -98,11 +114,18 @@
 
 <body>
 
+  <!-- שני החבלים, מחוץ לקונטיינר -->
+  <div class="hanger-wrapper-1">
+    <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
+  </div>
+
+  <div class="hanger-wrapper-2">
+    <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
+  </div>
+
   <div class="container">
 
     <div class="row-wrapper">
-      <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
-
       <div class="clip" style="left: 25%;"></div>
       <div class="clip" style="left: 75%;"></div>
 
@@ -116,8 +139,6 @@
     </div>
 
     <div class="row-wrapper">
-      <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
-
       <div class="clip" style="left: 25%;"></div>
       <div class="clip" style="left: 75%;"></div>
 
