@@ -42,13 +42,14 @@
   <script>
     window.addEventListener('message', (event) => {
       const urls = event.data.images;
-      if (!urls || urls.length < 4) {
-        document.body.innerHTML = '<h2 style="text-align:center;margin-top:40vh;font-family:sans-serif;color:#444;">Waiting for more images...</h2>';
-        return;
-      }
       for (let i = 0; i < 4; i++) {
         const img = document.getElementById(`p${i + 1}`);
-        if (img) img.src = urls[i];
+        if (urls[i]) {
+          img.src = urls[i];
+          img.style.display = 'block';
+        } else {
+          img.style.display = 'none';
+        }
       }
     });
   </script>

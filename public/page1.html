@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Album - Page 1</title>
+  <title>Wedding Album - Fully Fixed Version</title>
   <style>
     body {
       margin: 0;
@@ -12,45 +13,148 @@
       font-family: 'Segoe UI', sans-serif;
       height: 100vh;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 90vmin;
+      height: 90vmin;
+      gap: 8vw;
+    }
+
+    .row-wrapper {
       position: relative;
+      display: flex;
+      justify-content: center;
+      gap: 4vw;
+      padding-top: 10vmin;
     }
 
-    .photo {
+    .hanger-img {
       position: absolute;
-      width: 28%;
+      top: 0;
+      left: 0;
+      width: 100vw;
       height: auto;
-      border-radius: 8px;
-      object-fit: cover;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      border: 6px solid white;
-      padding: 24px 2px;
-      background: white;
+      z-index: 0;
     }
 
-    .photo1 { top: 23%; left: 10%; transform: rotate(-2deg); width: 48%; }
-    .photo2 { top: 12%; right: 9%; transform: rotate(10deg); width: 48%; }
-    .photo3 { bottom: 20%; left: 13%; transform: rotate(1.5deg); width: 38%; }
-    .photo4 { bottom: 26%; right: 13%; transform: rotate(-2.5deg); width: 38%; }
+    .image-wrapper {
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      animation: floatEffect 10s ease-in-out infinite;
+      width: 42vmin;
+      height: 42vmin;
+      z-index: 1;
+    }
+
+    .clip {
+      position: absolute;
+      top: 5vmin;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10vmin;
+      height: 10vmin;
+      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1749697580/ChatGPT_Image_Jun_12_2025_06_06_11_AM_q6wpkz.png') no-repeat center;
+      background-size: contain;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    @keyframes floatEffect {
+      0% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
+      25% { transform: translate(2px, -2px) rotate(-1deg) scale(1.02); }
+      50% { transform: translate(-2px, 2px) rotate(1deg) scale(1); }
+      75% { transform: translate(2px, 2px) rotate(-0.8deg) scale(1.03); }
+      100% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 20px;
+      transition: 0.3s;
+    }
+
+    .landscape { width: 100%; height: auto; }
+    .portrait { width: auto; height: 100%; }
+
+    #wrapper1 { animation-delay: 0s; }
+    #wrapper2 { animation-delay: 2s; }
+    #wrapper3 { animation-delay: 4s; }
+    #wrapper4 { animation-delay: 6s; }
   </style>
 </head>
+
 <body>
-  <img id="p1" class="photo photo1" />
-  <img id="p2" class="photo photo2" />
-  <img id="p3" class="photo photo3" />
-  <img id="p4" class="photo photo4" />
+
+  <div class="container">
+
+    <div class="row-wrapper">
+      <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
+
+      <div class="clip" style="left: 25%;"></div>
+      <div class="clip" style="left: 75%;"></div>
+
+      <div class="image-wrapper" id="wrapper1">
+        <img id="img1">
+      </div>
+
+      <div class="image-wrapper" id="wrapper2">
+        <img id="img2">
+      </div>
+    </div>
+
+    <div class="row-wrapper">
+      <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
+
+      <div class="clip" style="left: 25%;"></div>
+      <div class="clip" style="left: 75%;"></div>
+
+      <div class="image-wrapper" id="wrapper3">
+        <img id="img3">
+      </div>
+
+      <div class="image-wrapper" id="wrapper4">
+        <img id="img4">
+      </div>
+    </div>
+
+  </div>
 
   <script>
     window.addEventListener('message', (event) => {
       const urls = event.data.images;
-      if (!urls || urls.length < 4) {
-        document.body.innerHTML = '<h2 style="text-align:center;margin-top:40vh;font-family:sans-serif;color:#444;">Waiting for more images...</h2>';
-        return;
-      }
-      for (let i = 0; i < 4; i++) {
-        const img = document.getElementById(`p${i + 1}`);
-        if (img) img.src = urls[i];
+
+      urls.forEach((url, i) => {
+        const img = document.getElementById(`img${i + 1}`);
+        img.src = url;
+
+        img.onload = () => {
+          if (img.naturalWidth > img.naturalHeight) {
+            img.classList.add('landscape');
+          } else {
+            img.classList.add('portrait');
+          }
+        };
+      });
+
+      for (let i = urls.length; i < 4; i++) {
+        document.getElementById(`wrapper${i + 1}`).style.display = 'none';
       }
     });
   </script>
+
 </body>
+
 </html>

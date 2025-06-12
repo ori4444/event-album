@@ -113,79 +113,71 @@
 
         const pageFrame = document.getElementById('page-frame');
         let currentPage = 0;
+        let pages = [];
 
         function loadPages(images) {
-            const pageLayouts = [4, 4, 4, 4];
-            const totalPages = Math.min(Math.floor(images.length / 4), pageLayouts.length);
-            const pages = [];
-            for (let i = 0; i < totalPages; i++) {
-                const start = i * 4;
-                const pageImages = images.slice(start, start + 4);
-                pages.push({ name: `page${(i % 4) + 1}.html`, images: pageImages });
+            const pageLayouts = [4, 4, 4, 4]; // בעתיד תוכל לשנות
+            const loadedPages = [];
+
+            let index = 0;
+            let layoutIndex = 0;
+
+            while (index < images.length) {
+                const imagesPerPage = pageLayouts[layoutIndex];
+                const pageImages = images.slice(index, index + imagesPerPage);
+
+                loadedPages.push({ name: `page${layoutIndex + 1}.html`, images: pageImages });
+
+                index += imagesPerPage;
+                layoutIndex = (layoutIndex + 1) % pageLayouts.length;
             }
-            return pages;
+
+            if (loadedPages.length === 0) {
+                loadedPages.push({ name: `page1.html`, images: [] });
+            }
+
+            return loadedPages;
         }
 
         function changePage(offset) {
-            console.log("🔄 changePage called with offset:", offset);
-            fetch('/images')
-                .then(res => {
-                    console.log("📥 Fetch /images status:", res.status);
-                    return res.json();
-                })
-                .then(images => {
-                    console.log("🖼️ Images received:", images);
-                    const pages = loadPages(images);
-                    console.log("📄 Pages prepared:", pages);
+            if (pages.length === 0) return;
 
-                    if (pages.length === 0) {
-                        console.warn("⚠️ No pages to show.");
-                        return;
-                    }
+            currentPage = (currentPage + offset + pages.length) % pages.length;
+            const selectedPage = pages[currentPage];
 
-                    currentPage = (currentPage + offset + pages.length) % pages.length;
-                    const selectedPage = pages[currentPage];
-                    console.log("📌 Current page index:", currentPage);
-                    console.log("📂 Will load:", selectedPage.name, "with images:", selectedPage.images);
+            pageFrame.src = selectedPage.name;
 
-                    // בדיקת iframe
-                    if (!pageFrame) {
-                        console.error("❗ pageFrame is null or undefined");
-                        return;
-                    }
+            pageFrame.onload = () => {
+                try {
+                    const win = pageFrame.contentWindow;
+                    if (!win) return;
 
-                    pageFrame.src = selectedPage.name;
-
-                    pageFrame.onload = () => {
-                        console.log("✅ iframe loaded:", selectedPage.name);
-
-                        try {
-                            const win = pageFrame.contentWindow;
-                            if (!win) {
-                                console.error("❗ contentWindow is null");
-                                return;
-                            }
-
-                            console.log("📤 Posting message to iframe:", selectedPage.images);
-                            win.postMessage({ images: selectedPage.images }, '*');
-
-                            hideLoader();
-                        } catch (err) {
-                            console.error("💥 Error posting message to iframe:", err);
-                        }
-                    };
-                })
-                .catch(err => {
-                    console.error("💥 Error in changePage:", err);
-                });
+                    win.postMessage({ images: selectedPage.images }, '*');
+                    hideLoader();
+                } catch (err) {
+                    console.error("Error posting message to iframe:", err);
+                }
+            };
         }
 
+        fetch('/images')
+            .then(res => res.json())
+            .then(images => {
+                // *** כאן בוצע התיקון הקריטי ***
+                // images.reverse(); --> אין יותר reverse
 
-
-      
+                pages = loadPages(images).reverse();
+                if (pages.length === 0) {
+                    alert("No images to display");
+                    window.location.href = "index.html";
+                } else {
+                    changePage(0);
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching images:", err);
+            });
     </script>
-
-    <script src="album-loader.js"></script>
 </body>
 
 </html>
