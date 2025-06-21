@@ -4,184 +4,144 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Album - Final Control Version</title>
+  <title>Wedding Album - Page 1 Collage</title>
   <style>
-    :root {
-      --container-height: 90vmin;
-      --hanger-offset: 10vmin; /* כאן תשנה לשלוט על גובה החוט */
-      --row-gap: 8vmin;
-      --image-height: 42vmin;
-    }
-
-    body {
+    html, body {
       margin: 0;
-      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1748875751/backround1_ihblf4.png') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
+      padding: 0;
+      height: 100%;
       overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative;
-    }
-
-    .hanger-wrapper-1 {
-      position: absolute;
-      top: 93vmin;
-      left: 0;
-      width: 100%;
-      z-index: 0;
-    }
-
-    .hanger-wrapper-2 {
-      position: absolute;
-      top: 33vmin;
-      left: 0;
-      width: 100%;
-      z-index: 0;
-    }
-
-    .hanger-img {
-      width: 100%;
-      height: auto;
-      display: block;
+      background-color: #f0f0f0;
     }
 
     .container {
-      position: relative;
-      width: var(--container-height);
-      height: var(--container-height);
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      gap: var(--row-gap);
-    }
-
-    .row-wrapper {
-      display: flex;
       justify-content: center;
-      gap: 4vmin;
-      padding-top: var(--hanger-offset);
-      position: relative;
+      gap: 12px;
+      padding: 10px;
+      box-sizing: border-box;
+      height: 100vh;
+      overflow: hidden;
     }
 
     .image-wrapper {
-      border-radius: 20px;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      animation: floatEffect 10s ease-in-out infinite;
-      width: 42vmin;
-      height: 42vmin;
-      z-index: 1;
+      transform: rotate(calc(-6deg + 12deg * var(--rand, 0)));
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 8px;
     }
 
-    .clip {
-      position: absolute;
-      top: 5vmin;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 10vmin;
-      height: 10vmin;
-      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1749697580/ChatGPT_Image_Jun_12_2025_06_06_11_AM_q6wpkz.png') no-repeat center;
-      background-size: contain;
-      z-index: 10;
-      pointer-events: none;
+    .image-wrapper:nth-child(odd) {
+      align-self: flex-start;
+      margin-left: 8vw;
     }
 
-    @keyframes floatEffect {
-      0% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
-      25% { transform: translate(2px, -2px) rotate(-1deg) scale(1.02); }
-      50% { transform: translate(-2px, 2px) rotate(1deg) scale(1); }
-      75% { transform: translate(2px, 2px) rotate(-0.8deg) scale(1.03); }
-      100% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
+    .image-wrapper:nth-child(even) {
+      align-self: flex-end;
+      margin-right: 8vw;
     }
 
-    img {
-      max-width: 100%;
+    .image-wrapper:only-child {
+      align-self: center;
+      margin: 0 auto;
+    }
+
+    .image-wrapper:hover {
+      transform: scale(1.03) rotate(calc(-6deg + 12deg * var(--rand, 0)));
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .image-wrapper img {
+      width: auto;
       height: auto;
-      border-radius: 20px;
-      transition: 0.3s;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+      border-radius: 8px;
     }
 
-    .landscape { width: 100%; height: auto; }
-    .portrait { width: auto; height: 100%; }
+    .one-image .image-wrapper {
+      max-width: 70vw;
+      max-height: 60vh;
+    }
 
-    #wrapper1 { animation-delay: 0s; }
-    #wrapper2 { animation-delay: 2s; }
-    #wrapper3 { animation-delay: 4s; }
-    #wrapper4 { animation-delay: 6s; }
+    .two-images .image-wrapper {
+      max-width: 60vw;
+      max-height: 30vh;
+    }
+
+    .three-images .image-wrapper {
+      max-width: 55vw;
+      max-height: 24vh;
+    }
+
+    .four-images .image-wrapper {
+      max-width: 48vw;
+      max-height: 20vh;
+    }
+
+    @media (max-height: 900px) {
+      .one-image .image-wrapper { max-height: 50vh; }
+      .two-images .image-wrapper { max-height: 26vh; }
+      .three-images .image-wrapper { max-height: 20vh; }
+      .four-images .image-wrapper { max-height: 18vh; }
+    }
+
+    @media (max-height: 700px) {
+      .one-image .image-wrapper { max-height: 40vh; }
+      .two-images .image-wrapper { max-height: 22vh; }
+      .three-images .image-wrapper { max-height: 18vh; }
+      .four-images .image-wrapper { max-height: 16vh; }
+    }
   </style>
 </head>
 
 <body>
-
-  <!-- חבלים עם שליטה מלאה בגובה -->
-  <div class="hanger-wrapper-1">
-    <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
-  </div>
-
-  <div class="hanger-wrapper-2">
-    <img class="hanger-img" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1749700784/rope_transparent_ujqcmg.png">
-  </div>
-
-  <div class="container">
-
-    <div class="row-wrapper">
-      <div class="clip" style="left: 25%;"></div>
-      <div class="clip" style="left: 75%;"></div>
-
-      <div class="image-wrapper" id="wrapper1">
-        <img id="img1">
-      </div>
-
-      <div class="image-wrapper" id="wrapper2">
-        <img id="img2">
-      </div>
+  <div class="container" id="imageContainer">
+    <div class="image-wrapper" id="wrapper1" style="--rand: 0.1">
+      <img id="img1">
     </div>
-
-    <div class="row-wrapper">
-      <div class="clip" style="left: 25%;"></div>
-      <div class="clip" style="left: 75%;"></div>
-
-      <div class="image-wrapper" id="wrapper3">
-        <img id="img3">
-      </div>
-
-      <div class="image-wrapper" id="wrapper4">
-        <img id="img4">
-      </div>
+    <div class="image-wrapper" id="wrapper2" style="--rand: 0.7">
+      <img id="img2">
     </div>
-
+    <div class="image-wrapper" id="wrapper3" style="--rand: 0.3">
+      <img id="img3">
+    </div>
+    <div class="image-wrapper" id="wrapper4" style="--rand: 0.9">
+      <img id="img4">
+    </div>
   </div>
 
   <script>
     window.addEventListener('message', (event) => {
       const urls = event.data.images;
+      const container = document.getElementById('imageContainer');
 
       urls.forEach((url, i) => {
         const img = document.getElementById(`img${i + 1}`);
         img.src = url;
-
-        img.onload = () => {
-          if (img.naturalWidth > img.naturalHeight) {
-            img.classList.add('landscape');
-          } else {
-            img.classList.add('portrait');
-          }
-        };
       });
 
       for (let i = urls.length; i < 4; i++) {
         document.getElementById(`wrapper${i + 1}`).style.display = 'none';
       }
+
+      if (urls.length === 1) {
+        container.className = 'container one-image';
+      } else if (urls.length === 2) {
+        container.className = 'container two-images';
+      } else if (urls.length === 3) {
+        container.className = 'container three-images';
+      } else {
+        container.className = 'container four-images';
+      }
     });
   </script>
-
 </body>
 
 </html>

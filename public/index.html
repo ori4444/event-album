@@ -8,11 +8,14 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
 
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
     }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       width: 100%;
@@ -52,9 +55,14 @@
     .header-block {
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      margin-top: auto;
+      margin-bottom: auto;
+      margin-top: 45vh;
     }
+
+
 
     .header-title {
       font-size: clamp(2rem, 8vw, 6rem);
@@ -76,7 +84,8 @@
       padding-bottom: 2vh;
     }
 
-    .upload-section, .album-button {
+    .upload-section,
+    .album-button {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -87,24 +96,32 @@
       transition: box-shadow 0.3s ease;
     }
 
-    .upload-section:hover, .album-button:hover {
+    .upload-section:hover,
+    .album-button:hover {
       box-shadow: 0 0 10px rgba(245, 230, 179, 0.6);
     }
 
-    .upload-btn img, .album-image-btn {
-      width: clamp(60px, 18vw, 150px);
-      height: clamp(60px, 18vw, 150px);
+    .upload-btn img,
+    .album-image-btn {
+      width: clamp(30px, 9vw, 75px);
+      height: clamp(30px, 9vw, 75px);
       border-radius: 50%;
       object-fit: cover;
     }
+
 
     input[type="file"] {
       display: none;
     }
 
     @media (max-height: 500px) {
-      .header-title { margin-bottom: 0.5rem; }
-      .header-date { margin-bottom: 1rem; }
+      .header-title {
+        margin-bottom: 0.5rem;
+      }
+
+      .header-date {
+        margin-bottom: 1rem;
+      }
     }
   </style>
 </head>
@@ -112,7 +129,8 @@
 <body>
   <div class="wrapper">
     <video autoplay muted loop playsinline class="background-video">
-      <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748954137/Untitled_ufamiv.mp4" type="video/mp4" />
+      <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748954137/Untitled_ufamiv.mp4"
+        type="video/mp4" />
     </video>
 
     <div class="container">
@@ -124,13 +142,17 @@
       <div class="album-container">
         <div class="upload-section">
           <label class="upload-btn" for="fileInput">
-            <img src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955300/ChatGPT_Image_Jun_3_2025_03_54_31_PM_ga6ezr.png" alt="Upload" />
+            <img
+              src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955300/ChatGPT_Image_Jun_3_2025_03_54_31_PM_ga6ezr.png"
+              alt="Upload" />
           </label>
           <input type="file" name="image" id="fileInput" accept="image/*,video/*" />
         </div>
 
         <div class="album-button" id="albumBtn">
-          <img class="album-image-btn" src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955283/ChatGPT_Image_Jun_3_2025_03_53_32_PM_ysx81b.png" alt="Open Album" />
+          <img class="album-image-btn"
+            src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955283/ChatGPT_Image_Jun_3_2025_03_53_32_PM_ysx81b.png"
+            alt="Open Album" />
         </div>
       </div>
     </div>
