@@ -10,13 +10,18 @@
     body {
       margin: 0;
       padding: 0;
+      overflow: hidden;
+    }
+
+    .full-wrapper {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
       background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1750519090/81W4c2ULxLL_xqpf8q.png') no-repeat center center fixed;
       background-size: cover;
-      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
     }
 
     .grid-container {
@@ -130,7 +135,9 @@
 </head>
 
 <body>
-  <div class="grid-container" id="gridContainer"></div>
+  <div class="full-wrapper">
+    <div class="grid-container" id="gridContainer"></div>
+  </div>
 
   <script>
     window.addEventListener('message', (event) => {
@@ -228,7 +235,7 @@
         innerRow.className = 'top-row';
         topRow.forEach(img => innerRow.appendChild(img));
         wrapper.appendChild(innerRow);
-        document.body.appendChild(wrapper);
+        document.querySelector('.full-wrapper').appendChild(wrapper);
       }
 
       if (bottomRow.length > 0) {
@@ -238,7 +245,7 @@
         innerRow.className = 'bottom-row';
         bottomRow.forEach(img => innerRow.appendChild(img));
         wrapper.appendChild(innerRow);
-        document.body.appendChild(wrapper);
+        document.querySelector('.full-wrapper').appendChild(wrapper);
       }
 
       const center = document.createElement('div');
