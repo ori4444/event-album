@@ -7,18 +7,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wedding Album - Dynamic Layout</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+    }
+
+    body {
       overflow: hidden;
     }
 
-    .full-wrapper {
+    .outer-wrapper {
       height: 100vh;
       width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       position: relative;
       background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1750519090/81W4c2ULxLL_xqpf8q.png') no-repeat center center fixed;
       background-size: cover;
+    }
+
+    .full-wrapper {
+      flex-grow: 1;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -135,8 +147,10 @@
 </head>
 
 <body>
-  <div class="full-wrapper">
-    <div class="grid-container" id="gridContainer"></div>
+  <div class="outer-wrapper">
+    <div class="full-wrapper">
+      <div class="grid-container" id="gridContainer"></div>
+    </div>
   </div>
 
   <script>
@@ -235,7 +249,7 @@
         innerRow.className = 'top-row';
         topRow.forEach(img => innerRow.appendChild(img));
         wrapper.appendChild(innerRow);
-        document.querySelector('.full-wrapper').appendChild(wrapper);
+        document.querySelector('.outer-wrapper').appendChild(wrapper);
       }
 
       if (bottomRow.length > 0) {
@@ -245,7 +259,7 @@
         innerRow.className = 'bottom-row';
         bottomRow.forEach(img => innerRow.appendChild(img));
         wrapper.appendChild(innerRow);
-        document.querySelector('.full-wrapper').appendChild(wrapper);
+        document.querySelector('.outer-wrapper').appendChild(wrapper);
       }
 
       const center = document.createElement('div');
