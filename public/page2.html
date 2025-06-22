@@ -23,9 +23,31 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      position: relative;
       background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1750519090/81W4c2ULxLL_xqpf8q.png') no-repeat center center fixed;
       background-size: cover;
+    }
+
+    .top-row-wrapper,
+    .bottom-row-wrapper {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .top-row,
+    .bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4vw;
+    }
+
+    .top-row img,
+    .bottom-row img {
+      width: 24vh;
+      height: auto;
+      object-fit: contain;
+      border-radius: 12px;
     }
 
     .full-wrapper {
@@ -42,7 +64,7 @@
       grid-template-columns: repeat(5, 1fr);
       grid-template-rows: repeat(3, 1fr);
       gap: 2vh 2vw;
-      height: 90vh;
+      height: 100%;
       width: 90vw;
       align-items: center;
       justify-items: center;
@@ -88,38 +110,6 @@
       border-radius: 12px;
     }
 
-    .top-row-wrapper,
-    .bottom-row-wrapper {
-      position: absolute;
-      display: flex;
-      justify-content: center;
-      width: 100%;
-    }
-
-    .top-row-wrapper {
-      top: 5%;
-    }
-
-    .bottom-row-wrapper {
-      bottom: 5%;
-    }
-
-    .top-row,
-    .bottom-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4vw;
-    }
-
-    .top-row img,
-    .bottom-row img {
-      width: 24vh;
-      height: auto;
-      object-fit: contain;
-      border-radius: 12px;
-    }
-
     .center-piece {
       width: 12vh;
       height: 12vh;
@@ -148,9 +138,11 @@
 
 <body>
   <div class="outer-wrapper">
+    <div class="top-row-wrapper"></div>
     <div class="full-wrapper">
       <div class="grid-container" id="gridContainer"></div>
     </div>
+    <div class="bottom-row-wrapper"></div>
   </div>
 
   <script>
@@ -242,24 +234,22 @@
         container.appendChild(item);
       }
 
+      const topWrapper = document.querySelector('.top-row-wrapper');
+      topWrapper.innerHTML = '';
       if (topRow.length > 0) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'top-row-wrapper';
         const innerRow = document.createElement('div');
         innerRow.className = 'top-row';
         topRow.forEach(img => innerRow.appendChild(img));
-        wrapper.appendChild(innerRow);
-        document.querySelector('.outer-wrapper').appendChild(wrapper);
+        topWrapper.appendChild(innerRow);
       }
 
+      const bottomWrapper = document.querySelector('.bottom-row-wrapper');
+      bottomWrapper.innerHTML = '';
       if (bottomRow.length > 0) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'bottom-row-wrapper';
         const innerRow = document.createElement('div');
         innerRow.className = 'bottom-row';
         bottomRow.forEach(img => innerRow.appendChild(img));
-        wrapper.appendChild(innerRow);
-        document.querySelector('.outer-wrapper').appendChild(wrapper);
+        bottomWrapper.appendChild(innerRow);
       }
 
       const center = document.createElement('div');
