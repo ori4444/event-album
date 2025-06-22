@@ -25,6 +25,9 @@
       justify-content: space-between;
       background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1750519090/81W4c2ULxLL_xqpf8q.png') no-repeat center center fixed;
       background-size: cover;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
     .top-row-wrapper,
@@ -32,6 +35,8 @@
       display: flex;
       justify-content: center;
       width: 100%;
+      flex-shrink: 0;
+      padding: 1vh 0;
     }
 
     .top-row,
@@ -44,7 +49,7 @@
 
     .top-row img,
     .bottom-row img {
-      width: 24vh;
+      width: 18vh;
       height: auto;
       object-fit: contain;
       border-radius: 12px;
@@ -130,7 +135,7 @@
 
       .top-row img,
       .bottom-row img {
-        width: 20vh;
+        width: 16vh;
       }
     }
   </style>
