@@ -146,7 +146,7 @@
               src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955300/ChatGPT_Image_Jun_3_2025_03_54_31_PM_ga6ezr.png"
               alt="Upload" />
           </label>
-          <input type="file" name="image" id="fileInput" accept="image/*,video/*" />
+          <input type="file" name="image" id="fileInput" accept="image/*,video/*" multiple />
         </div>
 
         <div class="album-button" id="albumBtn">
@@ -161,28 +161,33 @@
   <script>
     const fileInput = document.getElementById('fileInput');
     fileInput.addEventListener('change', async () => {
-      const file = fileInput.files[0];
-      if (!file) return;
+      const files = Array.from(fileInput.files);
+      if (files.length === 0) return;
 
-      const formData = new FormData();
-      formData.append('image', file);
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
 
-      try {
-        const response = await fetch('/upload', {
-          method: 'POST',
-          body: formData
-        });
-        const result = await response.json();
+        try {
+          const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
 
-        if (result.success) {
-          window.location.href = 'album.html';
-        } else {
-          alert('Upload failed');
+          if (!result.success) {
+            alert('Upload failed for a file');
+            return;
+          }
+        } catch {
+          alert('Error uploading a file');
+          return;
         }
-      } catch {
-        alert('Error uploading file');
       }
+
+      window.location.href = 'album.html';
     });
+
 
     const albumBtn = document.getElementById('albumBtn');
     albumBtn.addEventListener('click', async (e) => {

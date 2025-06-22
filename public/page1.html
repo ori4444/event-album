@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wedding Album - Page 1 Collage</title>
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       height: 100%;
@@ -36,14 +37,25 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    .image-wrapper:nth-child(1) {
+      --zigzag: -16vw;
+    }
+
+    .image-wrapper:nth-child(2) {
+      --zigzag: 16vw;
+    }
+
+    .image-wrapper:nth-child(3) {
+      --zigzag: -16vw;
+    }
+
+    .image-wrapper:nth-child(4) {
+      --zigzag: 16vw;
+    }
+
     .image-wrapper:not(:first-child) {
       margin-top: -4vh;
     }
-
-    .image-wrapper:nth-child(1) { --zigzag: -16vw; }
-    .image-wrapper:nth-child(2) { --zigzag: 16vw; }
-    .image-wrapper:nth-child(3) { --zigzag: -16vw; }
-    .image-wrapper:nth-child(4) { --zigzag: 16vw; }
 
     .image-wrapper:only-child {
       align-self: center;
@@ -68,25 +80,37 @@
     .image-wrapper::before {
       content: '';
       position: absolute;
-      top: -8vh;
+      top: -4vh;
       left: 50%;
       transform: translateX(-50%) rotate(0deg);
-      width: 15vw;
-      height: 4vh;
+      width: 25vw;
+      height: 8vh;
       background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1750494001/ChatGPT_Image_Jun_21_2025_11_19_20_AM_vdpmdt.png') no-repeat center center / contain;
       z-index: 10;
     }
 
+    #wrapper2::before {
+      top: -2vh;
+      left: 10%;
+      transform: translateX(-50%) rotate(-35deg);
+    }
+
+    #wrapper4::before {
+      top: -2vh;
+      left: 90%;
+      transform: translateX(-50%) rotate(35deg);
+    }
+
     .one-image .image-wrapper img {
-      height: 70vh;
+      height: 45vh;
     }
 
     .two-images .image-wrapper img {
-      height: 36vh;
+      height: 22vh;
     }
 
     .three-images .image-wrapper img {
-      height: 27vh;
+      height: 18vh;
     }
 
     .four-images .image-wrapper img {
@@ -94,17 +118,39 @@
     }
 
     @media (max-height: 900px) {
-      .one-image .image-wrapper img { height: 65vh; }
-      .two-images .image-wrapper img { height: 34vh; }
-      .three-images .image-wrapper img { height: 25vh; }
-      .four-images .image-wrapper img { height: 19vh; }
+      .one-image .image-wrapper img {
+        height: 40vh;
+      }
+
+      .two-images .image-wrapper img {
+        height: 22vh;
+      }
+
+      .three-images .image-wrapper img {
+        height: 16vh;
+      }
+
+      .four-images .image-wrapper img {
+        height: 19vh;
+      }
     }
 
     @media (max-height: 700px) {
-      .one-image .image-wrapper img { height: 55vh; }
-      .two-images .image-wrapper img { height: 30vh; }
-      .three-images .image-wrapper img { height: 22vh; }
-      .four-images .image-wrapper img { height: 17vh; }
+      .one-image .image-wrapper img {
+        height: 35vh;
+      }
+
+      .two-images .image-wrapper img {
+        height: 18vh;
+      }
+
+      .three-images .image-wrapper img {
+        height: 14vh;
+      }
+
+      .four-images .image-wrapper img {
+        height: 17vh;
+      }
     }
   </style>
 </head>

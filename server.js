@@ -21,9 +21,11 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'wedding_album',
+    resource_type: 'auto',
     allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4']
   }
 });
+
 const upload = multer({ storage });
 
 // PostgreSQL pool
