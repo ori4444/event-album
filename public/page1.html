@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wedding Album - Page 1 Collage</title>
   <style>
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
@@ -23,7 +21,6 @@
       justify-content: flex-start;
       padding: 6vh 0;
       box-sizing: border-box;
-      height: 100vh;
     }
 
     .image-wrapper {
@@ -37,25 +34,12 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .image-wrapper:nth-child(1) {
-      --zigzag: -16vw;
-    }
+    .image-wrapper:nth-child(1) { --zigzag: -16vw; }
+    .image-wrapper:nth-child(2) { --zigzag: 16vw; }
+    .image-wrapper:nth-child(3) { --zigzag: -16vw; }
+    .image-wrapper:nth-child(4) { --zigzag: 16vw; }
 
-    .image-wrapper:nth-child(2) {
-      --zigzag: 16vw;
-    }
-
-    .image-wrapper:nth-child(3) {
-      --zigzag: -16vw;
-    }
-
-    .image-wrapper:nth-child(4) {
-      --zigzag: 16vw;
-    }
-
-    .image-wrapper:not(:first-child) {
-      margin-top: -4vh;
-    }
+    .image-wrapper:not(:first-child) { margin-top: -4vh; }
 
     .image-wrapper:only-child {
       align-self: center;
@@ -101,79 +85,39 @@
       transform: translateX(-50%) rotate(35deg);
     }
 
-    .one-image .image-wrapper img {
-      height: 45vh;
-    }
-
-    .two-images .image-wrapper img {
-      height: 22vh;
-    }
-
-    .three-images .image-wrapper img {
-      height: 18vh;
-    }
-
-    .four-images .image-wrapper img {
-      height: 21vh;
-    }
+    .one-image .image-wrapper img { height: 45vh; }
+    .two-images .image-wrapper img { height: 22vh; }
+    .three-images .image-wrapper img { height: 18vh; }
+    .four-images .image-wrapper img { height: 21vh; }
 
     @media (max-height: 900px) {
-      .one-image .image-wrapper img {
-        height: 40vh;
-      }
-
-      .two-images .image-wrapper img {
-        height: 22vh;
-      }
-
-      .three-images .image-wrapper img {
-        height: 16vh;
-      }
-
-      .four-images .image-wrapper img {
-        height: 19vh;
-      }
+      .one-image .image-wrapper img { height: 40vh; }
+      .two-images .image-wrapper img { height: 22vh; }
+      .three-images .image-wrapper img { height: 16vh; }
+      .four-images .image-wrapper img { height: 19vh; }
     }
 
     @media (max-height: 700px) {
-      .one-image .image-wrapper img {
-        height: 35vh;
-      }
-
-      .two-images .image-wrapper img {
-        height: 18vh;
-      }
-
-      .three-images .image-wrapper img {
-        height: 14vh;
-      }
-
-      .four-images .image-wrapper img {
-        height: 17vh;
-      }
+      .one-image .image-wrapper img { height: 35vh; }
+      .two-images .image-wrapper img { height: 18vh; }
+      .three-images .image-wrapper img { height: 14vh; }
+      .four-images .image-wrapper img { height: 17vh; }
     }
   </style>
 </head>
 
 <body>
   <div class="container" id="imageContainer">
-    <div class="image-wrapper" id="wrapper1" style="--rand: 0.1">
-      <img id="img1">
-    </div>
-    <div class="image-wrapper" id="wrapper2" style="--rand: 0.7">
-      <img id="img2">
-    </div>
-    <div class="image-wrapper" id="wrapper3" style="--rand: 0.3">
-      <img id="img3">
-    </div>
-    <div class="image-wrapper" id="wrapper4" style="--rand: 0.9">
-      <img id="img4">
-    </div>
+    <div class="image-wrapper" id="wrapper1" style="--rand: 0.1"><img id="img1"></div>
+    <div class="image-wrapper" id="wrapper2" style="--rand: 0.7"><img id="img2"></div>
+    <div class="image-wrapper" id="wrapper3" style="--rand: 0.3"><img id="img3"></div>
+    <div class="image-wrapper" id="wrapper4" style="--rand: 0.9"><img id="img4"></div>
   </div>
 
   <script>
     window.addEventListener('message', (event) => {
       const urls = event.data.images;
+      const iframeId = event.data.iframeId;
       const container = document.getElementById('imageContainer');
 
       urls.forEach((url, i) => {
@@ -194,8 +138,13 @@
       } else {
         container.className = 'container four-images';
       }
+
+      // שלח את הגובה חזרה ל־iframe האב
+      setTimeout(() => {
+        const height = document.body.scrollHeight;
+        window.parent.postMessage({ iframeId, height }, '*');
+      }, 100);
     });
   </script>
 </body>
-
 </html>

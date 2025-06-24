@@ -1,183 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wedding Album</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #f4f4f4;
-            font-family: 'Segoe UI', sans-serif;
-            position: relative;
-        }
+  <meta charset="UTF-8">
+  <title>Wedding Album Scroll</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      font-family: 'Playfair Display', serif;
+      overflow-x: hidden;
+    }
 
-        #page-frame {
-            width: 100vw;
-            height: 100vh;
-            border: none;
-            display: none;
-        }
+    .album-frame {
+      width: 100%;
+      height: 100vh;
+      border: none;
+      display: block;
+    }
 
-        .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(255, 255, 255, 0.6);
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      border-top: 4px solid black;
+      padding: 0.5rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
 
-        #prev-btn {
-            left: 10px;
-        }
+    .upload-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
 
-        #next-btn {
-            right: 10px;
-        }
+    .upload-btn img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ccc;
+    }
 
-        #back-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 10px 16px;
-            border-radius: 20px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 2;
-        }
-
-        #loader {
-            position: absolute;
-            width: 100vw;
-            height: 100vh;
-            background: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 5;
-        }
-
-        .spinner {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #555;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
+    input[type="file"] {
+      display: none;
+    }
+  </style>
 </head>
-
 <body>
-    <div id="loader">
-        <div class="spinner"></div>
+  <!-- פתיח מתוך index -->
+  <header style="position: relative; width: 100%; height: 100vh; overflow: hidden;">
+    <video autoplay muted loop playsinline style="position: absolute; width: 100%; height: 100%; object-fit: cover; top: 0; left: 0; z-index: 0;">
+      <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748954137/Untitled_ufamiv.mp4" type="video/mp4" />
+    </video>
+    <div style="position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #f5e6b3; text-align: center;">
+      <div style="font-size: clamp(2rem, 8vw, 6rem); font-weight: bold; margin-bottom: 1rem;">Yanir & Shir</div>
+      <div style="font-size: clamp(1rem, 4vw, 3rem); margin-bottom: 3rem;">19/08/2025</div>
     </div>
+  </header>
 
-    <button id="back-btn" onclick="window.location.href='index.html'">Back</button>
-    <button id="prev-btn" class="nav-btn" onclick="changePage(-1)">◀</button>
-    <button id="next-btn" class="nav-btn" onclick="changePage(1)">▶</button>
+  <!-- כאן נכניס את העמודים -->
+  <div id="album"></div>
 
-    <iframe id="page-frame" src=""></iframe>
+  <!-- בר תחתון -->
+  <div class="bottom-bar">
+    <label class="upload-btn" for="fileInput">
+      <img src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955300/ChatGPT_Image_Jun_3_2025_03_54_31_PM_ga6ezr.png" alt="Upload" />
+    </label>
+    <input type="file" name="image" id="fileInput" accept="image/*,video/*" multiple />
+  </div>
 
-    <script>
-        function hideLoader() {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('page-frame').style.display = 'block';
+  <script>
+    const layouts = [4, 6, 4, 4];
+    fetch('/images')
+      .then(res => res.json())
+      .then(images => {
+        const container = document.getElementById('album');
+        let index = 0, layoutIndex = 0;
+
+        while (index < images.length) {
+          const count = layouts[layoutIndex];
+          const group = images.slice(index, index + count);
+          const iframe = document.createElement('iframe');
+          iframe.src = `page${layoutIndex + 1}.html`;
+          iframe.className = 'album-frame';
+          iframe.onload = () => {
+            iframe.contentWindow.postMessage({ images: group }, '*');
+          };
+          container.appendChild(iframe);
+
+          index += count;
+          layoutIndex = (layoutIndex + 1) % layouts.length;
         }
+      });
 
-        const pageFrame = document.getElementById('page-frame');
-        let currentPage = 0;
-        let pages = [];
+    const fileInput = document.getElementById('fileInput');
+    fileInput.addEventListener('change', async () => {
+      const files = Array.from(fileInput.files);
+      if (files.length === 0) return;
 
-        function loadPages(images) {
-            const pageLayouts = [4, 6, 4, 4]; // בעתיד תוכל לשנות
-            const loadedPages = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
 
-            let index = 0;
-            let layoutIndex = 0;
+        try {
+          const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
 
-            while (index < images.length) {
-                const imagesPerPage = pageLayouts[layoutIndex];
-                const pageImages = images.slice(index, index + imagesPerPage);
-
-                loadedPages.push({ name: `page${layoutIndex + 1}.html`, images: pageImages });
-
-                index += imagesPerPage;
-                layoutIndex = (layoutIndex + 1) % pageLayouts.length;
-            }
-
-            if (loadedPages.length === 0) {
-                loadedPages.push({ name: `page1.html`, images: [] });
-            }
-
-            return loadedPages;
+          if (!result.success) {
+            alert('Upload failed for a file');
+            return;
+          }
+        } catch {
+          alert('Error uploading a file');
+          return;
         }
+      }
 
-        function changePage(offset) {
-            if (pages.length === 0) return;
-
-            currentPage = (currentPage + offset + pages.length) % pages.length;
-            const selectedPage = pages[currentPage];
-
-            pageFrame.src = selectedPage.name;
-
-            pageFrame.onload = () => {
-                try {
-                    const win = pageFrame.contentWindow;
-                    if (!win) return;
-
-                    win.postMessage({ images: selectedPage.images }, '*');
-                    hideLoader();
-                } catch (err) {
-                    console.error("Error posting message to iframe:", err);
-                }
-            };
-        }
-
-        fetch('/images')
-            .then(res => res.json())
-            .then(images => {
-                // *** כאן בוצע התיקון הקריטי ***
-                // images.reverse(); --> אין יותר reverse
-
-                pages = loadPages(images).reverse();
-                if (pages.length === 0) {
-                    alert("No images to display");
-                    window.location.href = "index.html";
-                } else {
-                    changePage(0);
-                }
-            })
-            .catch(err => {
-                console.error("Error fetching images:", err);
-            });
-    </script>
+      window.location.href = 'album.html';
+    });
+  </script>
 </body>
-
 </html>
