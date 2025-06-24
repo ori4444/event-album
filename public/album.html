@@ -19,31 +19,54 @@
       display: block;
     }
 
+    #spinner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(255, 255, 255, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #spinner .loader {
+      border: 6px solid #ccc;
+      border-top: 6px solid black;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* פס קבוע בתחתית */
     .bottom-bar {
       position: fixed;
       bottom: 0;
+      left: 0;
       width: 100%;
       background: white;
-      border-top: 4px solid black;
-      padding: 0.5rem 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
+      border-top: 3px solid black;
+      z-index: 10000;
+      text-align: center;
+      padding: 10px 0;
     }
 
-    .upload-btn {
-      border: none;
-      background: none;
+    .bottom-bar label {
       cursor: pointer;
     }
 
-    .upload-btn img {
-      width: 60px;
-      height: 60px;
+    .bottom-bar img {
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #ccc;
     }
 
     input[type="file"] {
@@ -63,24 +86,37 @@
     </div>
   </header>
 
+  <div id="spinner">
+    <div class="loader"></div>
+  </div>
+
   <!-- כאן נכניס את העמודים -->
   <div id="album"></div>
 
-  <!-- בר תחתון -->
+  <!-- בר תחתון עם העלאה -->
   <div class="bottom-bar">
-    <label class="upload-btn" for="fileInput">
-      <img src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955300/ChatGPT_Image_Jun_3_2025_03_54_31_PM_ga6ezr.png" alt="Upload" />
+    <label for="fileInput">
+      <img src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955300/ChatGPT_Image_Jun_3_2025_03_54_31_PM_ga6ezr.png" alt="Upload">
     </label>
-    <input type="file" name="image" id="fileInput" accept="image/*,video/*" multiple />
+    <input type="file" id="fileInput" name="image" accept="image/*,video/*" multiple />
   </div>
 
   <script>
     const layouts = [4, 6, 4, 4];
+    const spinner = document.getElementById('spinner');
+    const album = document.getElementById('album');
+    let triggeredByUpload = sessionStorage.getItem('uploading') === 'true';
+
+    if (triggeredByUpload) {
+      spinner.style.display = 'flex';
+    }
+
     fetch('/images')
       .then(res => res.json())
       .then(images => {
-        const container = document.getElementById('album');
         let index = 0, layoutIndex = 0;
+        let loadedIframes = 0;
+        const totalIframes = Math.ceil(images.length / layouts.reduce((a, b) => a + b) * layouts.length);
 
         while (index < images.length) {
           const count = layouts[layoutIndex];
@@ -90,18 +126,27 @@
           iframe.className = 'album-frame';
           iframe.onload = () => {
             iframe.contentWindow.postMessage({ images: group }, '*');
-          };
-          container.appendChild(iframe);
 
+            loadedIframes++;
+            if (triggeredByUpload && loadedIframes === Math.ceil(images.length / count)) {
+              spinner.style.display = 'none';
+              sessionStorage.removeItem('uploading');
+              setTimeout(() => {
+                iframe.scrollIntoView({ behavior: 'smooth' });
+              }, 300);
+            }
+          };
+          album.appendChild(iframe);
           index += count;
           layoutIndex = (layoutIndex + 1) % layouts.length;
         }
       });
 
-    const fileInput = document.getElementById('fileInput');
-    fileInput.addEventListener('change', async () => {
-      const files = Array.from(fileInput.files);
+    document.getElementById('fileInput').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
       if (files.length === 0) return;
+
+      spinner.style.display = 'flex';
 
       for (const file of files) {
         const formData = new FormData();
@@ -115,16 +160,20 @@
           const result = await response.json();
 
           if (!result.success) {
-            alert('Upload failed for a file');
+            alert('Upload failed');
+            spinner.style.display = 'none';
             return;
           }
         } catch {
-          alert('Error uploading a file');
+          alert('Error uploading');
+          spinner.style.display = 'none';
           return;
         }
       }
 
-      window.location.href = 'album.html';
+      // העלאה הצליחה — ניכנס לאלבום עם spinner ומעקב
+      sessionStorage.setItem('uploading', 'true');
+      location.reload();
     });
   </script>
 </body>
