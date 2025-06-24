@@ -19,58 +19,58 @@
       display: block;
     }
 
-    #spinner {
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      border-top: 4px solid black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 0.5rem 0;
+    }
+
+    .bottom-bar input[type="file"] {
+      display: none;
+    }
+
+    .upload-btn {
+      cursor: pointer;
+      background: black;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    .spinner-overlay {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(255, 255, 255, 0.9);
-      display: none;
-      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
       align-items: center;
-      z-index: 9999;
+      justify-content: center;
+      z-index: 2000;
+      display: none;
     }
 
-    #spinner .loader {
-      border: 6px solid #ccc;
-      border-top: 6px solid black;
+    .spinner {
+      width: 80px;
+      height: 80px;
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #f5e6b3;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
       animation: spin 1s linear infinite;
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* פס קבוע בתחתית */
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: white;
-      border-top: 3px solid black;
-      z-index: 10000;
-      text-align: center;
-      padding: 10px 0;
-    }
-
-    .bottom-bar label {
-      cursor: pointer;
-    }
-
-    .bottom-bar img {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-    }
-
-    input[type="file"] {
-      display: none;
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -86,37 +86,34 @@
     </div>
   </header>
 
-  <div id="spinner">
-    <div class="loader"></div>
-  </div>
-
   <!-- כאן נכניס את העמודים -->
   <div id="album"></div>
 
-  <!-- בר תחתון עם העלאה -->
+  <!-- בר תחתון -->
   <div class="bottom-bar">
-    <label for="fileInput">
-      <img src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955300/ChatGPT_Image_Jun_3_2025_03_54_31_PM_ga6ezr.png" alt="Upload">
-    </label>
-    <input type="file" id="fileInput" name="image" accept="image/*,video/*" multiple />
+    <label class="upload-btn" for="uploadInput">עלה תמונה</label>
+    <input type="file" id="uploadInput" multiple accept="image/*,video/*">
+  </div>
+
+  <!-- ספינר -->
+  <div class="spinner-overlay" id="spinner">
+    <div class="spinner"></div>
   </div>
 
   <script>
     const layouts = [4, 6, 4, 4];
+    const urlParams = new URLSearchParams(window.location.search);
+    const showSpinner = urlParams.has('upload');
     const spinner = document.getElementById('spinner');
-    const album = document.getElementById('album');
-    let triggeredByUpload = sessionStorage.getItem('uploading') === 'true';
 
-    if (triggeredByUpload) {
-      spinner.style.display = 'flex';
-    }
+    if (showSpinner) spinner.style.display = 'flex';
 
     fetch('/images')
       .then(res => res.json())
       .then(images => {
+        const container = document.getElementById('album');
         let index = 0, layoutIndex = 0;
-        let loadedIframes = 0;
-        const totalIframes = Math.ceil(images.length / layouts.reduce((a, b) => a + b) * layouts.length);
+        const iframes = [];
 
         while (index < images.length) {
           const count = layouts[layoutIndex];
@@ -124,26 +121,36 @@
           const iframe = document.createElement('iframe');
           iframe.src = `page${layoutIndex + 1}.html`;
           iframe.className = 'album-frame';
+
           iframe.onload = () => {
             iframe.contentWindow.postMessage({ images: group }, '*');
-
-            loadedIframes++;
-            if (triggeredByUpload && loadedIframes === Math.ceil(images.length / count)) {
-              spinner.style.display = 'none';
-              sessionStorage.removeItem('uploading');
-              setTimeout(() => {
-                iframe.scrollIntoView({ behavior: 'smooth' });
-              }, 300);
-            }
           };
-          album.appendChild(iframe);
+
+          container.appendChild(iframe);
+          iframes.push(iframe);
+
           index += count;
           layoutIndex = (layoutIndex + 1) % layouts.length;
         }
+
+        if (showSpinner) {
+          let loadedCount = 0;
+
+          window.addEventListener('message', (e) => {
+            if (e.data === 'imagesLoaded') {
+              loadedCount++;
+              if (loadedCount === iframes.length) {
+                spinner.style.display = 'none';
+                setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 50);
+              }
+            }
+          });
+        }
       });
 
-    document.getElementById('fileInput').addEventListener('change', async (e) => {
-      const files = Array.from(e.target.files);
+    // upload logic
+    document.getElementById('uploadInput').addEventListener('change', async (event) => {
+      const files = Array.from(event.target.files);
       if (files.length === 0) return;
 
       spinner.style.display = 'flex';
@@ -153,12 +160,8 @@
         formData.append('image', file);
 
         try {
-          const response = await fetch('/upload', {
-            method: 'POST',
-            body: formData
-          });
-          const result = await response.json();
-
+          const res = await fetch('/upload', { method: 'POST', body: formData });
+          const result = await res.json();
           if (!result.success) {
             alert('Upload failed');
             spinner.style.display = 'none';
@@ -171,9 +174,7 @@
         }
       }
 
-      // העלאה הצליחה — ניכנס לאלבום עם spinner ומעקב
-      sessionStorage.setItem('uploading', 'true');
-      location.reload();
+      window.location.href = 'album.html?upload';
     });
   </script>
 </body>
