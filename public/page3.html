@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wedding Album - Final Fix</title>
+  <title>Wedding Album - Bounce Motion</title>
   <style>
     html, body {
       margin: 0;
@@ -19,81 +19,89 @@
       position: absolute;
       object-fit: contain;
       border-radius: 1vh;
-      animation-iteration-count: infinite;
-      animation-timing-function: linear;
-      animation-fill-mode: forwards;
+      width: 15vw;
+      height: auto;
+      pointer-events: none;
     }
 
-    /* אנימציות קיימות */
-    @keyframes move1  { 0% { transform: translate(-20vw, 100vh); } 100% { transform: translate(120vw, -20vh); } }
-    @keyframes move2  { 0% { transform: translate(100vw, -20vh); } 100% { transform: translate(-20vw, 120vh); } }
-    @keyframes move3  { 0% { transform: translate(-30vw, -10vh); } 100% { transform: translate(110vw, 110vh); } }
-    @keyframes move4  { 0% { transform: translate(50vw, 120vh); } 100% { transform: translate(-50vw, -20vh); } }
-    @keyframes move5  { 0% { transform: translate(120vw, 50vh); } 100% { transform: translate(-20vw, -50vh); } }
-    @keyframes move6  { 0% { transform: translate(-10vw, 110vh); } 100% { transform: translate(130vw, -30vh); } }
-    @keyframes move7  { 0% { transform: translate(100vw, 100vh); } 100% { transform: translate(-30vw, -30vh); } }
-    @keyframes move8  { 0% { transform: translate(-20vw, 40vh); } 100% { transform: translate(120vw, 80vh); } }
-    @keyframes move9  { 0% { transform: translate(110vw, 10vh); } 100% { transform: translate(-30vw, 90vh); } }
+    .spinning-wrapper {
+      animation-name: spin;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
 
-    /* אנימציות חדשות לדוגמה */
-    @keyframes move10 { 0% { transform: translate(0vw, 110vh); } 100% { transform: translate(0vw, -20vh); } }
-    @keyframes move11 { 0% { transform: translate(120vw, 120vh); } 100% { transform: translate(-40vw, -40vh); } }
-    @keyframes move12 { 0% { transform: translate(-10vw, -30vh); } 100% { transform: translate(130vw, 130vh); } }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <script>
     const imageSettings = [
-      { width: '20vw', duration: '24s', delay: '0s',  animation: 'move1'  },
-      { width: '20vw', duration: '26s', delay: '10s', animation: 'move2'  },
-      { width: '22vw', duration: '28s', delay: '2s',  animation: 'move3'  },
-      { width: '49vw', duration: '45s', delay: '5.5s',animation: 'move4'  },
-      { width: '21vw', duration: '27s', delay: '2.5s',animation: 'move5'  },
-      { width: '37vw', duration: '29s', delay: '3s',  animation: 'move6'  },
-      { width: '23vw', duration: '31s', delay: '4.5s',animation: 'move7'  },
-      { width: '16vw', duration: '22s', delay: '5s',  animation: 'move10' },
-      { width: '24vw', duration: '33s', delay: '5.2s',animation: 'move11' }
-    ];
+  { x: 10, y: 20, dx: 1.2, dy: 0.8, spin: false, speed: 10, scale: 2 },
+  { x: 200, y: 100, dx: -1, dy: 1.1, spin: true, spinSpeed: 25, speed: 12, scale: 1 },
+  { x: 300, y: 300, dx: 0.9, dy: -1.3, spin: false, speed: 8, scale: 2.2 },
+  { x: 500, y: 50, dx: -1.4, dy: 0.7, spin: true, spinSpeed: 40, speed: 9, scale: 1 },
+  { x: 700, y: 200, dx: 1.5, dy: -1.2, spin: false, speed: 11, scale: 1 },
+  { x: 100, y: 400, dx: -0.8, dy: 1.4, spin: true, spinSpeed: 18, speed: 13, scale: 2.1 },
+  { x: 900, y: 300, dx: -1.1, dy: -1.1, spin: false, speed: 10, scale: 1 },
+  { x: 400, y: 500, dx: 1, dy: -1.5, spin: true, spinSpeed: 22, speed: 12, scale: 1 },
+  { x: 600, y: 150, dx: -1.3, dy: 1.3, spin: false, speed: 14, scale: 1 }
+];
 
-    const createImage = (url, settings) => {
+    const images = [];
+
+    function createImage(url, settings) {
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'absolute';
+      wrapper.style.left = settings.x + 'px';
+      wrapper.style.top = settings.y + 'px';
+
       const img = new Image();
       img.src = url;
       img.className = 'moving-img';
-      img.style.width = settings.width;
-      img.style.height = 'auto';
-      img.style.top = '0';
-      img.style.left = '0';
-      img.style.animationName = settings.animation;
-      img.style.animationDuration = settings.duration;
-      img.style.animationDelay = '0s'; // אין דיליי – כי ניצור אותה בזמן
+      if (settings.scale) {
+        img.style.transform = `scale(${settings.scale})`;
+      }
 
-      document.body.appendChild(img);
-    };
+      const container = document.createElement('div');
+      if (settings.spin) {
+        container.className = 'spinning-wrapper';
+        container.style.animationDuration = settings.spinSpeed + 's';
+      }
+      container.appendChild(img);
+      wrapper.appendChild(container);
+      document.body.appendChild(wrapper);
 
-    const showImagesSafely = (images) => {
-      images.slice(0, 9).forEach((url, i) => {
-        const settings = imageSettings[i];
-        const delayMs = parseFloat(settings.delay) * 1000;
-        setTimeout(() => {
-          createImage(url, settings);
-        }, delayMs);
+      images.push({ el: wrapper, dx: settings.dx, dy: settings.dy });
+    }
+
+    function animate() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      images.forEach(img => {
+        const rect = img.el.getBoundingClientRect();
+        let x = rect.left + img.dx;
+        let y = rect.top + img.dy;
+
+        if (x < 0 || x + img.el.offsetWidth > w) img.dx *= -1;
+        if (y < 0 || y + img.el.offsetHeight > h) img.dy *= -1;
+
+        img.el.style.left = (x < 0 ? 0 : Math.min(x, w - img.el.offsetWidth)) + 'px';
+        img.el.style.top = (y < 0 ? 0 : Math.min(y, h - img.el.offsetHeight)) + 'px';
       });
-    };
 
-    window.addEventListener('message', (event) => {
-      const images = event.data.images;
-      if (Array.isArray(images)) {
-        document.body.innerHTML = '';
-        showImagesSafely(images);
-      }
-    });
+      requestAnimationFrame(animate);
+    }
 
-    window.addEventListener('load', () => {
-      if (!window.opener) {
-        const dummy = 'https://res.cloudinary.com/demo/image/upload/sample.jpg';
-        const urls = Array(9).fill(dummy);
-        showImagesSafely(urls);
-      }
+    window.addEventListener('message', event => {
+      const urls = event.data.images || [];
+      document.body.innerHTML = '';
+      images.length = 0;
+      urls.slice(0, 9).forEach((url, i) => createImage(url, imageSettings[i]));
+      animate();
     });
   </script>
 </body>

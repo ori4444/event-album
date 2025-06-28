@@ -85,9 +85,10 @@
       height: 100%;
       background: white;
       z-index: 9999;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
+      transition: opacity 0.5s ease;
     }
 
     .spinner {
@@ -110,19 +111,35 @@
       width: 100%;
       background: transparent;
     }
+
+    .fade-in-text {
+      opacity: 0;
+      animation: fadeIn 1.5s ease forwards;
+      animation-delay: 0.3s;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
   </style>
 </head>
 
 <body>
   <header style="position: relative; width: 100%; height: 100vh; overflow: hidden;">
-    <video autoplay muted loop playsinline
-      style="position: absolute; width: 100%; height: 100%; object-fit: cover; top: 0; left: 0; z-index: 0;">
-      <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748954137/Untitled_ufamiv.mp4"
+    <video id="bgVideo" autoplay muted loop playsinline
+      style="position: absolute; width: 100%; height: 100%; object-fit: cover;
+             top: 0; left: 0; z-index: 0; opacity: 0; transition: opacity 1.5s ease;">
+      <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1751107760/Untitled-2_ai2sbj.mp4"
         type="video/mp4" />
     </video>
-    <div style="position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: black; text-align: center;">
-      <div style="font-size: clamp(2rem, 8vw, 6rem); font-weight: bold; margin-bottom: 1rem;">Yanir & Shir</div>
-      <div style="font-size: clamp(1rem, 4vw, 3rem); margin-bottom: 3rem;">19/08/2025</div>
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                z-index: 1; text-align: center; color: #ffe680; text-shadow: 1px 1px 6px black;">
+      <div class="fade-in-text" style="font-size: clamp(2rem, 8vw, 6rem); font-weight: bold; margin-bottom: 1rem;">
+        Yanir & Shir
+      </div>
+      <div class="fade-in-text" style="font-size: clamp(1rem, 4vw, 3rem);">
+        19/08/2025
+      </div>
     </div>
   </header>
 
@@ -144,6 +161,12 @@
     const layouts = [4, 6, 9, 4];
     const album = document.getElementById('album');
     const spinner = document.getElementById('spinnerOverlay');
+    const bgVideo = document.getElementById('bgVideo');
+
+    function hideSpinner() {
+      spinner.style.opacity = '0';
+      setTimeout(() => spinner.style.display = 'none', 500);
+    }
 
     async function loadAlbum(images, scrollToBottom = false) {
       album.innerHTML = '';
@@ -171,7 +194,18 @@
       return await res.json();
     }
 
-    fetchImages().then(images => loadAlbum(images));
+    Promise.all([
+      new Promise(resolve => bgVideo.oncanplaythrough = () => {
+        bgVideo.style.opacity = '1';
+        resolve();
+      }),
+      fetchImages().then(images => {
+        loadAlbum(images);
+        return true;
+      })
+    ]).then(() => {
+      hideSpinner();
+    });
 
     const input = document.getElementById('uploadInput');
     input.addEventListener('change', async () => {
@@ -179,6 +213,7 @@
       if (!files.length) return;
 
       spinner.style.display = 'flex';
+      spinner.style.opacity = '1';
 
       for (const file of files) {
         const formData = new FormData();
@@ -198,7 +233,7 @@
       setTimeout(async () => {
         const updatedImages = await fetchImages();
         await loadAlbum(updatedImages, true);
-        spinner.style.display = 'none';
+        hideSpinner();
       }, 1500);
     });
   </script>
