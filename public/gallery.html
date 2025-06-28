@@ -23,13 +23,13 @@
     .gallery {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: flex-start;
       padding: 0 2vw;
       gap: 2vw;
     }
 
     .image-wrapper {
-      width: 30vw;
+      width: calc((100% - 4vw) / 3);
       aspect-ratio: 1 / 1;
       position: relative;
       overflow: hidden;
@@ -64,13 +64,13 @@
 
     .modal-content {
       position: relative;
-      max-height: 90vh;
-      max-width: 90vw;
+      width: 100vw;
+      height: 100vh;
     }
 
     .modal img {
-      width: 100%;
-      height: auto;
+      width: 100vw;
+      height: 100vh;
       object-fit: contain;
     }
 
@@ -162,7 +162,7 @@
   <div class="modal" id="modal" onclick="closeModal(event)">
     <div class="modal-content">
       <img id="modal-img" src="" alt="full" />
-      <a id="download-link" class="download-btn" download>
+      <a id="download-link" class="download-btn">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path d="M5 20h14v-2H5v2zm7-18L5.33 9h4.17v6h4V9h4.17L12 2z"/>
         </svg>
@@ -179,6 +179,7 @@
 
   <script>
     const images = [];
+    let currentImageSrc = '';
 
     async function fetchImages() {
       const res = await fetch('/images');
@@ -189,7 +190,7 @@
 
     function loadGallery() {
       const gallery = document.getElementById('gallery');
-      images.forEach((src) => {
+      images.forEach((src, i) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'image-wrapper';
 
@@ -205,10 +206,8 @@
     function openModal(src) {
       const modal = document.getElementById('modal');
       const modalImg = document.getElementById('modal-img');
-      const downloadLink = document.getElementById('download-link');
-
+      currentImageSrc = src;
       modalImg.src = src;
-      downloadLink.href = src;
       modal.style.display = 'flex';
     }
 
@@ -221,6 +220,24 @@
     function goBack() {
       window.location.href = '/';
     }
+
+    document.getElementById('download-link').addEventListener('click', function(event) {
+      event.preventDefault();
+      fetch(currentImageSrc, { mode: 'cors' })
+        .then(res => res.blob())
+        .then(blob => {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'image.jpg';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+        .catch(err => {
+          alert('Download failed.');
+          console.error(err);
+        });
+    });
 
     fetchImages();
   </script>
