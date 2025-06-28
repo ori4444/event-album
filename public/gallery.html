@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      font-family: 'Playfair Display', serif;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 5vh;
+      margin-top: 12vh;
+      margin-bottom: 10vh;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0 2vw;
+      gap: 2vw;
+    }
+
+    .image-wrapper {
+      width: 30vw;
+      aspect-ratio: 1 / 1;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      border-radius: 1vh;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      border-radius: 1vh;
+    }
+
+    .image-wrapper:hover img {
+      transform: scale(1.02);
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-content {
+      position: relative;
+      max-height: 90vh;
+      max-width: 90vw;
+    }
+
+    .modal img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .download-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(180deg);
+      width: 8vh;
+      height: 8vh;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .download-btn:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .download-btn svg {
+      width: 3vh;
+      height: 3vh;
+      fill: white;
+    }
+
+    #bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 12vh;
+      background: white;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: 5vw;
+      padding-right: 5vw;
+    }
+
+    #uploadLabel {
+      width: 10vh;
+      height: 10vh;
+      border-radius: 50%;
+      background: white;
+      color: black;
+      font-size: 6vh;
+      font-weight: bold;
+      border: 4px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: box-shadow 0.3s ease;
+    }
+
+    #albumLink {
+      position: absolute;
+      left: 5vw;
+      font-size: 2.5vh;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 2vh;
+      padding: 1vh 2vw;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    .bottom-padding {
+      height: 12vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gallery</h1>
+  <div class="gallery" id="gallery"></div>
+
+  <div class="modal" id="modal" onclick="closeModal(event)">
+    <div class="modal-content">
+      <img id="modal-img" src="" alt="full" />
+      <a id="download-link" class="download-btn" download>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M5 20h14v-2H5v2zm7-18L5.33 9h4.17v6h4V9h4.17L12 2z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <div id="bottom-bar">
+    <a id="albumLink" href="/">Album</a>
+    <label id="uploadLabel" onclick="goBack()">+</label>
+  </div>
+
+  <div class="bottom-padding"></div>
+
+  <script>
+    const images = [];
+
+    async function fetchImages() {
+      const res = await fetch('/images');
+      const data = await res.json();
+      images.push(...data);
+      loadGallery();
+    }
+
+    function loadGallery() {
+      const gallery = document.getElementById('gallery');
+      images.forEach((src) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'image-wrapper';
+
+        const img = document.createElement('img');
+        img.src = src;
+        wrapper.appendChild(img);
+
+        wrapper.addEventListener('click', () => openModal(src));
+        gallery.appendChild(wrapper);
+      });
+    }
+
+    function openModal(src) {
+      const modal = document.getElementById('modal');
+      const modalImg = document.getElementById('modal-img');
+      const downloadLink = document.getElementById('download-link');
+
+      modalImg.src = src;
+      downloadLink.href = src;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal(e) {
+      if (e.target.id === 'modal' || e.target.id === 'modal-img') {
+        document.getElementById('modal').style.display = 'none';
+      }
+    }
+
+    function goBack() {
+      window.location.href = '/';
+    }
+
+    fetchImages();
+  </script>
+</body>
+</html>

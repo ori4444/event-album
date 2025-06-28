@@ -1,210 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Home</title>
+  <title>Wedding Album Scroll</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
+      background: white;
       font-family: 'Playfair Display', serif;
-      background-color: black;
+      overflow-x: hidden;
     }
 
-    .wrapper {
-      position: relative;
+    .album-frame {
       width: 100%;
-      height: 100%;
-      overflow: hidden;
+      height: 100vh;
+      border: none;
+      display: block;
     }
 
-    .background-video {
+    #bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 12vh;
+      background: white;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: 5vw;
+      padding-right: 5vw;
+    }
+
+    #galleryButton {
       position: absolute;
+      left: 5vw;
+      font-size: 2.5vh;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 2vh;
+      padding: 1vh 2vw;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    #uploadInput {
+      display: none;
+    }
+
+    #uploadLabel {
+      width: 10vh;
+      height: 10vh;
+      border-radius: 50%;
+      background: white;
+      color: black;
+      font-size: 6vh;
+      font-weight: bold;
+      border: 4px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: box-shadow 0.3s ease;
+    }
+
+    #uploadLabel:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    #spinnerOverlay {
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-rows: 1fr auto;
-      height: 100%;
-      width: 100%;
-      padding: 2rem;
-      color: #f5e6b3;
-      text-align: center;
-    }
-
-    .header-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-top: auto;
-      margin-bottom: auto;
-      margin-top: 45vh;
-    }
-
-
-
-    .header-title {
-      font-size: clamp(2rem, 8vw, 6rem);
-      font-weight: 600;
-      letter-spacing: 0.3vw;
-      margin-bottom: 1rem;
-    }
-
-    .header-date {
-      font-size: clamp(1rem, 4vw, 3rem);
-      margin-bottom: 3rem;
-    }
-
-    .album-container {
-      display: flex;
-      gap: 5vw;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding-bottom: 2vh;
-    }
-
-    .upload-section,
-    .album-button {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      border: 0.4vw solid #f5e6b3;
-      border-radius: 50%;
-      padding: 1rem;
-      transition: box-shadow 0.3s ease;
-    }
-
-    .upload-section:hover,
-    .album-button:hover {
-      box-shadow: 0 0 10px rgba(245, 230, 179, 0.6);
-    }
-
-    .upload-btn img,
-    .album-image-btn {
-      width: clamp(30px, 9vw, 75px);
-      height: clamp(30px, 9vw, 75px);
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-
-    input[type="file"] {
+      background: white;
+      z-index: 9999;
       display: none;
+      align-items: center;
+      justify-content: center;
     }
 
-    @media (max-height: 500px) {
-      .header-title {
-        margin-bottom: 0.5rem;
-      }
+    .spinner {
+      border: 8px solid white;
+      border-top: 8px solid black;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
 
-      .header-date {
-        margin-bottom: 1rem;
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
+    }
+
+    .bottom-padding {
+      height: 12vh;
+      width: 100%;
+      background: transparent;
     }
   </style>
 </head>
 
 <body>
-  <div class="wrapper">
-    <video autoplay muted loop playsinline class="background-video">
+  <header style="position: relative; width: 100%; height: 100vh; overflow: hidden;">
+    <video autoplay muted loop playsinline
+      style="position: absolute; width: 100%; height: 100%; object-fit: cover; top: 0; left: 0; z-index: 0;">
       <source src="https://res.cloudinary.com/dbpxjgghy/video/upload/v1748954137/Untitled_ufamiv.mp4"
         type="video/mp4" />
     </video>
-
-    <div class="container">
-      <div class="header-block">
-        <div class="header-title">Yanir &amp; Shir</div>
-        <div class="header-date">19/08/2025</div>
-      </div>
-
-      <div class="album-container">
-        <div class="upload-section">
-          <label class="upload-btn" for="fileInput">
-            <img
-              src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955300/ChatGPT_Image_Jun_3_2025_03_54_31_PM_ga6ezr.png"
-              alt="Upload" />
-          </label>
-          <input type="file" name="image" id="fileInput" accept="image/*,video/*" multiple />
-        </div>
-
-        <div class="album-button" id="albumBtn">
-          <img class="album-image-btn"
-            src="https://res.cloudinary.com/dbpxjgghy/image/upload/v1748955283/ChatGPT_Image_Jun_3_2025_03_53_32_PM_ysx81b.png"
-            alt="Open Album" />
-        </div>
-      </div>
+    <div style="position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: black; text-align: center;">
+      <div style="font-size: clamp(2rem, 8vw, 6rem); font-weight: bold; margin-bottom: 1rem;">Yanir & Shir</div>
+      <div style="font-size: clamp(1rem, 4vw, 3rem); margin-bottom: 3rem;">19/08/2025</div>
     </div>
+  </header>
+
+  <div id="album"></div>
+
+  <div id="bottom-bar">
+    <a href="gallery.html" id="galleryButton">Gallery</a>
+    <label id="uploadLabel" for="uploadInput">+</label>
+    <input type="file" id="uploadInput" accept="image/*,video/*" multiple />
   </div>
 
+  <div id="spinnerOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="bottom-padding"></div>
+
   <script>
-    const fileInput = document.getElementById('fileInput');
-    fileInput.addEventListener('change', async () => {
-      const files = Array.from(fileInput.files);
-      if (files.length === 0) return;
+    const layouts = [4, 6, 9, 4];
+    const album = document.getElementById('album');
+    const spinner = document.getElementById('spinnerOverlay');
+
+    async function loadAlbum(images, scrollToBottom = false) {
+      album.innerHTML = '';
+      let index = 0, layoutIndex = 0;
+      while (index < images.length) {
+        const count = layouts[layoutIndex];
+        const group = images.slice(index, index + count);
+        const iframe = document.createElement('iframe');
+        iframe.src = `page${layoutIndex + 1}.html`;
+        iframe.className = 'album-frame';
+        iframe.onload = () => {
+          iframe.contentWindow.postMessage({ images: group }, '*');
+        };
+        album.appendChild(iframe);
+        index += count;
+        layoutIndex = (layoutIndex + 1) % layouts.length;
+      }
+      if (scrollToBottom) {
+        setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 0);
+      }
+    }
+
+    async function fetchImages() {
+      const res = await fetch('/images');
+      return await res.json();
+    }
+
+    fetchImages().then(images => loadAlbum(images));
+
+    const input = document.getElementById('uploadInput');
+    input.addEventListener('change', async () => {
+      const files = Array.from(input.files);
+      if (!files.length) return;
+
+      spinner.style.display = 'flex';
 
       for (const file of files) {
         const formData = new FormData();
         formData.append('image', file);
 
         try {
-          const response = await fetch('/upload', {
-            method: 'POST',
-            body: formData
-          });
-          const result = await response.json();
-
-          if (!result.success) {
-            alert('Upload failed for a file');
-            return;
-          }
-        } catch {
-          alert('Error uploading a file');
+          const res = await fetch('/upload', { method: 'POST', body: formData });
+          const result = await res.json();
+          if (!result.success) throw new Error('Upload failed');
+        } catch (err) {
+          alert('שגיאה בהעלאת קובץ');
+          spinner.style.display = 'none';
           return;
         }
       }
 
-      window.location.href = 'album.html';
-    });
-
-
-    const albumBtn = document.getElementById('albumBtn');
-    albumBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      try {
-        const res = await fetch('/images');
-        const images = await res.json();
-        if (images.length > 0) {
-          window.location.href = 'album.html';
-        } else {
-          alert('No images to display');
-        }
-      } catch {
-        alert('Error checking album images');
-      }
+      setTimeout(async () => {
+        const updatedImages = await fetchImages();
+        await loadAlbum(updatedImages, true);
+        spinner.style.display = 'none';
+      }, 1500);
     });
   </script>
 </body>
-
 </html>

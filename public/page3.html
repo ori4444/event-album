@@ -1,55 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Album - Page 3</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wedding Album - Final Fix</title>
   <style>
-    body {
+    html, body {
       margin: 0;
-      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1748875751/backround1_ihblf4.png') no-repeat center center fixed;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1750947603/Black_Gold_Modern_Luxury_Blank_Background_Instagram_Story_1_achahl.png') no-repeat center center fixed;
       background-size: cover;
-      font-family: 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      overflow: visible;
-      position: relative;
     }
 
-    .photo {
+    .moving-img {
       position: absolute;
-      width: 28%;
-      height: auto;
-      border-radius: 8px;
-      object-fit: cover;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      border: 6px solid white;
-      padding: 24px 2px;
-      background: white;
+      object-fit: contain;
+      border-radius: 1vh;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
     }
 
-    .photo1 { top: 23%; left: 10%; transform: rotate(-2deg); width: 48%; }
-    .photo2 { top: 12%; right: 9%; transform: rotate(10deg); width: 48%; }
-    .photo3 { bottom: 20%; left: 13%; transform: rotate(1.5deg); width: 38%; }
-    .photo4 { bottom: 26%; right: 13%; transform: rotate(-2.5deg); width: 38%; }
+    /* אנימציות קיימות */
+    @keyframes move1  { 0% { transform: translate(-20vw, 100vh); } 100% { transform: translate(120vw, -20vh); } }
+    @keyframes move2  { 0% { transform: translate(100vw, -20vh); } 100% { transform: translate(-20vw, 120vh); } }
+    @keyframes move3  { 0% { transform: translate(-30vw, -10vh); } 100% { transform: translate(110vw, 110vh); } }
+    @keyframes move4  { 0% { transform: translate(50vw, 120vh); } 100% { transform: translate(-50vw, -20vh); } }
+    @keyframes move5  { 0% { transform: translate(120vw, 50vh); } 100% { transform: translate(-20vw, -50vh); } }
+    @keyframes move6  { 0% { transform: translate(-10vw, 110vh); } 100% { transform: translate(130vw, -30vh); } }
+    @keyframes move7  { 0% { transform: translate(100vw, 100vh); } 100% { transform: translate(-30vw, -30vh); } }
+    @keyframes move8  { 0% { transform: translate(-20vw, 40vh); } 100% { transform: translate(120vw, 80vh); } }
+    @keyframes move9  { 0% { transform: translate(110vw, 10vh); } 100% { transform: translate(-30vw, 90vh); } }
+
+    /* אנימציות חדשות לדוגמה */
+    @keyframes move10 { 0% { transform: translate(0vw, 110vh); } 100% { transform: translate(0vw, -20vh); } }
+    @keyframes move11 { 0% { transform: translate(120vw, 120vh); } 100% { transform: translate(-40vw, -40vh); } }
+    @keyframes move12 { 0% { transform: translate(-10vw, -30vh); } 100% { transform: translate(130vw, 130vh); } }
   </style>
 </head>
 <body>
-  <img id="p1" class="photo photo1" />
-  <img id="p2" class="photo photo2" />
-  <img id="p3" class="photo photo3" />
-  <img id="p4" class="photo photo4" />
-
   <script>
+    const imageSettings = [
+      { width: '20vw', duration: '24s', delay: '0s',  animation: 'move1'  },
+      { width: '20vw', duration: '26s', delay: '10s', animation: 'move2'  },
+      { width: '22vw', duration: '28s', delay: '2s',  animation: 'move3'  },
+      { width: '49vw', duration: '45s', delay: '5.5s',animation: 'move4'  },
+      { width: '21vw', duration: '27s', delay: '2.5s',animation: 'move5'  },
+      { width: '37vw', duration: '29s', delay: '3s',  animation: 'move6'  },
+      { width: '23vw', duration: '31s', delay: '4.5s',animation: 'move7'  },
+      { width: '16vw', duration: '22s', delay: '5s',  animation: 'move10' },
+      { width: '24vw', duration: '33s', delay: '5.2s',animation: 'move11' }
+    ];
+
+    const createImage = (url, settings) => {
+      const img = new Image();
+      img.src = url;
+      img.className = 'moving-img';
+      img.style.width = settings.width;
+      img.style.height = 'auto';
+      img.style.top = '0';
+      img.style.left = '0';
+      img.style.animationName = settings.animation;
+      img.style.animationDuration = settings.duration;
+      img.style.animationDelay = '0s'; // אין דיליי – כי ניצור אותה בזמן
+
+      document.body.appendChild(img);
+    };
+
+    const showImagesSafely = (images) => {
+      images.slice(0, 9).forEach((url, i) => {
+        const settings = imageSettings[i];
+        const delayMs = parseFloat(settings.delay) * 1000;
+        setTimeout(() => {
+          createImage(url, settings);
+        }, delayMs);
+      });
+    };
+
     window.addEventListener('message', (event) => {
-      const urls = event.data.images;
-      for (let i = 0; i < 4; i++) {
-        const img = document.getElementById(`p${i + 1}`);
-        if (urls[i]) {
-          img.src = urls[i];
-          img.style.display = 'block';
-        } else {
-          img.style.display = 'none';
-        }
+      const images = event.data.images;
+      if (Array.isArray(images)) {
+        document.body.innerHTML = '';
+        showImagesSafely(images);
+      }
+    });
+
+    window.addEventListener('load', () => {
+      if (!window.opener) {
+        const dummy = 'https://res.cloudinary.com/demo/image/upload/sample.jpg';
+        const urls = Array(9).fill(dummy);
+        showImagesSafely(urls);
       }
     });
   </script>
