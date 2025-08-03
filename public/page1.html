@@ -103,12 +103,24 @@
       .three-images .image-wrapper img { height: 14vh; }
       .four-images .image-wrapper img { height: 17vh; }
     }
+
+    #blessingText {
+      margin-top: 1vh;
+      text-align: center;
+      font-size: 2.2vh;
+      font-family: 'Playfair Display', serif;
+      color: #333;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 
 <body>
   <div class="container" id="imageContainer">
-    <div class="image-wrapper" id="wrapper1" style="--rand: 0.1"><img id="img1"></div>
+    <div class="image-wrapper" id="wrapper1" style="--rand: 0.1">
+      <img id="img1">
+      <p id="blessingText"></p>
+    </div>
     <div class="image-wrapper" id="wrapper2" style="--rand: 0.7"><img id="img2"></div>
     <div class="image-wrapper" id="wrapper3" style="--rand: 0.3"><img id="img3"></div>
     <div class="image-wrapper" id="wrapper4" style="--rand: 0.9"><img id="img4"></div>
@@ -118,6 +130,7 @@
     window.addEventListener('message', (event) => {
       const urls = event.data.images;
       const iframeId = event.data.iframeId;
+      const blessing = event.data.blessing || '';
       const container = document.getElementById('imageContainer');
 
       urls.forEach((url, i) => {
@@ -139,7 +152,8 @@
         container.className = 'container four-images';
       }
 
-      // שלח את הגובה חזרה ל־iframe האב
+      document.getElementById('blessingText').textContent = blessing;
+
       setTimeout(() => {
         const height = document.body.scrollHeight;
         window.parent.postMessage({ iframeId, height }, '*');

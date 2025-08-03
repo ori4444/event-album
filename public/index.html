@@ -12,6 +12,21 @@
       overflow-x: hidden;
     }
 
+    .blessing-box {
+      background: #fff4f4;
+      border: 1px solid #ffc4c4;
+      padding: 16px 24px;
+      margin: 20px auto 0;
+      width: fit-content;
+      max-width: 90%;
+      font-size: 1.3em;
+      border-radius: 12px;
+      text-align: center;
+      color: #a33;
+      font-family: 'Segoe UI', sans-serif;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
     .album-frame {
       width: 100%;
       height: 100vh;
@@ -156,6 +171,7 @@
   </div>
 
   <div class="bottom-padding"></div>
+  <div id="bottom-anchor"></div>
 
   <script>
     const layouts = [4, 6, 7, 4];
@@ -168,6 +184,11 @@
       setTimeout(() => spinner.style.display = 'none', 500);
     }
 
+    async function fetchImagesAndBlessings() {
+      const res = await fetch('/images');
+      return await res.json(); // כל תמונה כבר כוללת blessing
+    }
+
     async function loadAlbum(images, scrollToBottom = false) {
       album.innerHTML = '';
       let index = 0, layoutIndex = 0;
@@ -178,7 +199,7 @@
         iframe.src = `page${layoutIndex + 1}.html`;
         iframe.className = 'album-frame';
         iframe.onload = () => {
-          iframe.contentWindow.postMessage({ images: group }, '*');
+          iframe.contentWindow.postMessage({ images: group, blessing: group[0]?.blessing || '' }, '*');
         };
         album.appendChild(iframe);
         index += count;
@@ -189,26 +210,20 @@
       }
     }
 
-    async function fetchImages() {
-      const res = await fetch('/images');
-      return await res.json();
-    }
-
-Promise.all([
-  new Promise(resolve => bgVideo.oncanplaythrough = () => {
-    bgVideo.style.opacity = '1';
-    resolve();
-  }),
-  fetchImages().then(images => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const scrollToBottom = urlParams.get('scrollToBottom') === 'true';
-    loadAlbum(images, scrollToBottom);
-    return true;
-  })
-]).then(() => {
-  hideSpinner();
-});
-
+    Promise.all([
+      new Promise(resolve => bgVideo.oncanplaythrough = () => {
+        bgVideo.style.opacity = '1';
+        resolve();
+      }),
+      fetchImagesAndBlessings().then(images => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const scrollToBottom = urlParams.get('scrollToBottom') === 'true';
+        loadAlbum(images, scrollToBottom);
+        return true;
+      })
+    ]).then(() => {
+      hideSpinner();
+    });
 
     const input = document.getElementById('uploadInput');
     input.addEventListener('change', async () => {
@@ -218,10 +233,16 @@ Promise.all([
       spinner.style.display = 'flex';
       spinner.style.opacity = '1';
 
+      const blessing = prompt('כתבו ברכה לתמונה הראשונה (אופציונלי):')?.trim();
+      let isFirst = true;
+
       for (const file of files) {
         const formData = new FormData();
         formData.append('image', file);
-
+        if (isFirst && blessing) {
+          formData.append('blessing', blessing);
+          isFirst = false;
+        }
         try {
           const res = await fetch('/upload', { method: 'POST', body: formData });
           const result = await res.json();
@@ -234,10 +255,21 @@ Promise.all([
       }
 
       setTimeout(async () => {
-        const updatedImages = await fetchImages();
-        await loadAlbum(updatedImages, true);
+        const updated = await fetchImagesAndBlessings();
+        await loadAlbum(updated, true);
         hideSpinner();
       }, 1500);
+    });
+
+    // גלילה חלקה לעוגן אם יש hash
+    window.addEventListener('load', () => {
+      const hash = window.location.hash;
+      if (hash === '#bottom-anchor') {
+        const anchor = document.querySelector(hash);
+        if (anchor) {
+          anchor.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
     });
   </script>
 </body>

@@ -289,8 +289,6 @@ async function uploadImages() {
       console.log("📤 Adding blessing to first image:", blessingText);
       formData.append('blessing', blessingText);
       isFirst = false;
-    } else {
-      console.log("📤 No blessing for this image.");
     }
 
     const response = await fetch('/upload', {
@@ -301,6 +299,9 @@ async function uploadImages() {
     const result = await response.json();
     console.log("📥 Upload response:", result);
   }
+
+  // ✅ לאחר סיום ההעלאה – מעבר לאלבום
+  window.location.href = '/index.html#bottom-anchor';
 }
 
 

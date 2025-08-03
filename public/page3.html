@@ -22,8 +22,6 @@
       width: 15vw;
       height: auto;
       pointer-events: none;
-
-      /* מסגרת יוקרתית אלגנטית */
       border: 0.25vh solid #b0b7c3;
       box-shadow: 0 0 1vh rgba(176, 183, 195, 0.35);
       background-color: #fdfdfd;
@@ -59,14 +57,12 @@
       const wrapper = document.createElement('div');
       wrapper.style.position = 'absolute';
 
-      // חישוב גודל התמונה לאחר scale
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const imgWidth = 15 * settings.scale; // vw units
+      const imgWidth = 15 * settings.scale;
       const imgPxWidth = (vw * imgWidth) / 100;
-      const imgPxHeight = imgPxWidth * 0.75; // גובה מוערך לפי יחס 4:3
+      const imgPxHeight = imgPxWidth * 0.75;
 
-      // מיקום רנדומלי התחלתי
       const maxX = vw - imgPxWidth;
       const maxY = vh - imgPxHeight;
       const startX = Math.random() * maxX;
@@ -100,18 +96,54 @@
       const w = window.innerWidth;
       const h = window.innerHeight;
 
-      images.forEach(img => {
-        const rect = img.el.getBoundingClientRect();
-        let x = rect.left;
-        let y = rect.top;
-        const width = img.el.offsetWidth;
-        const height = img.el.offsetHeight;
+      images.forEach((img, i) => {
+        const el = img.el;
+        const imgEl = el.querySelector('img');
+        const scaleMatch = imgEl.style.transform.match(/scale\(([\d.]+)\)/);
+        const scale = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
 
-        if (x <= 0 || x + width >= w) img.dx *= -1;
-        if (y <= 0 || y + height >= h) img.dy *= -1;
+        const width = el.offsetWidth * scale;
+        const height = el.offsetHeight * scale;
+        let x = parseFloat(el.style.left);
+        let y = parseFloat(el.style.top);
 
-        img.el.style.left = (x + img.dx) + 'px';
-        img.el.style.top  = (y + img.dy) + 'px';
+        const nextX = x + img.dx;
+        const nextY = y + img.dy;
+
+        // שינוי כיוון מיידי אם חורגת
+        if (nextX < 0 || nextX + width > w) img.dx *= -1;
+        if (nextY < 0 || nextY + height > h) img.dy *= -1;
+
+        // התנגשויות
+        for (let j = 0; j < images.length; j++) {
+          if (i !== j) {
+            const other = images[j];
+            const otherEl = other.el;
+            const otherImg = otherEl.querySelector('img');
+            const otherScaleMatch = otherImg.style.transform.match(/scale\(([\d.]+)\)/);
+            const otherScale = otherScaleMatch ? parseFloat(otherScaleMatch[1]) : 1;
+
+            const ox = parseFloat(otherEl.style.left);
+            const oy = parseFloat(otherEl.style.top);
+            const ow = otherEl.offsetWidth * otherScale;
+            const oh = otherEl.offsetHeight * otherScale;
+
+            const overlap =
+              nextX < ox + ow &&
+              nextX + width > ox &&
+              nextY < oy + oh &&
+              nextY + height > oy;
+
+            if (overlap) {
+              img.dx *= -1;
+              img.dy *= -1;
+              break;
+            }
+          }
+        }
+
+        el.style.left = (x + img.dx) + 'px';
+        el.style.top  = (y + img.dy) + 'px';
       });
 
       requestAnimationFrame(animate);
