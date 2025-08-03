@@ -71,33 +71,43 @@ app.get('/images', async (req, res) => {
 });
 
 // נקודת העלאה עם ברכה
-app.post('/upload', upload.single('image'), async (req, res) => {
-  console.log('📥 Upload request received');
-  console.log('File:', req.file);
-  console.log('Body:', req.body);
+app.post('/upload', (req, res) => {
+  const multerMiddleware = upload.single('image');
 
-  if (!req.file) {
-    console.log('❌ No file uploaded');
-    return res.status(400).json({ success: false, message: 'No file uploaded' });
-  }
+  multerMiddleware(req, res, async function (err) {
+    if (err) {
+      console.error('❌ Multer error:', err);
+      return res.status(500).json({ success: false, message: 'Upload error' });
+    }
 
-  const now = new Date().toISOString();
-  const imageUrl = req.file.secure_url || req.file.path || req.file.url;
-  const blessing = req.body.blessing || null;
+    console.log('📥 Upload request received');
+    console.log('req.file:', req.file);
+    console.log('req.body:', req.body);
 
-  console.log('Parsed blessing:', blessing);
+    if (!req.file) {
+      console.log('❌ No file uploaded');
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
 
-  try {
-    const query = 'INSERT INTO "wedding-album" (url, upload_time, blessing) VALUES ($1, $2, $3)';
-    const values = [imageUrl, now, blessing];
-    await pool.query(query, values);
-    console.log('✅ Upload saved successfully to DB');
-    res.json({ success: true, message: 'Upload complete' });
-  } catch (err) {
-    console.error('❌ DB insert failed:', err);
-    res.status(500).json({ success: false, message: 'DB insert error' });
-  }
+    const now = new Date().toISOString();
+    const imageUrl = req.file.secure_url || req.file.path || req.file.url;
+    const blessing = req.body.blessing || null;
+
+    console.log('Parsed blessing:', blessing);
+
+    try {
+      const query = 'INSERT INTO "wedding-album" (url, upload_time, blessing) VALUES ($1, $2, $3)';
+      const values = [imageUrl, now, blessing];
+      await pool.query(query, values);
+      console.log('✅ Upload saved successfully to DB');
+      res.json({ success: true, message: 'Upload complete' });
+    } catch (err) {
+      console.error('❌ DB insert failed:', err);
+      res.status(500).json({ success: false, message: 'DB insert error' });
+    }
+  });
 });
+
 
 // התחלת שרת
 pool.connect().then(async client => {
