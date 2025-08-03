@@ -158,7 +158,7 @@
   <div class="bottom-padding"></div>
 
   <script>
-    const layouts = [4, 6, 9, 4];
+    const layouts = [4, 6, 7, 4];
     const album = document.getElementById('album');
     const spinner = document.getElementById('spinnerOverlay');
     const bgVideo = document.getElementById('bgVideo');
@@ -194,18 +194,21 @@
       return await res.json();
     }
 
-    Promise.all([
-      new Promise(resolve => bgVideo.oncanplaythrough = () => {
-        bgVideo.style.opacity = '1';
-        resolve();
-      }),
-      fetchImages().then(images => {
-        loadAlbum(images);
-        return true;
-      })
-    ]).then(() => {
-      hideSpinner();
-    });
+Promise.all([
+  new Promise(resolve => bgVideo.oncanplaythrough = () => {
+    bgVideo.style.opacity = '1';
+    resolve();
+  }),
+  fetchImages().then(images => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const scrollToBottom = urlParams.get('scrollToBottom') === 'true';
+    loadAlbum(images, scrollToBottom);
+    return true;
+  })
+]).then(() => {
+  hideSpinner();
+});
+
 
     const input = document.getElementById('uploadInput');
     input.addEventListener('change', async () => {

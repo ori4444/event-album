@@ -6,17 +6,15 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
-// Use the PORT provided by Railway (or 3000 locally)
 const port = process.env.PORT || 3000;
 
-// Cloudinary configuration
+// Cloudinary setup
 cloudinary.config({
   cloud_name: 'dbpxjgghy',
   api_key: '615724297644761',
   api_secret: 'srSE8nw-6hzDYTZ6dUPO8d8CbS0'
 });
 
-// Cloudinary storage setup
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -28,7 +26,7 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
-// PostgreSQL pool
+// PostgreSQL setup
 const pool = new Pool({
   connectionString: 'postgresql://postgres:jGilwsxTNfEruQtfzHzIyBZVugDQVvnv@shortline.proxy.rlwy.net:43346/railway',
   ssl: { rejectUnauthorized: false }
@@ -36,14 +34,30 @@ const pool = new Pool({
 
 app.use(cors());
 app.use(express.static('public'));
+
+// ❗ חיוני לנתח שדות טופס שאינם קבצים
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Health-check endpoint
+// יצירת טבלה אם לא קיימת
+const createTableIfNotExists = async () => {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS "wedding-album" (
+      id SERIAL PRIMARY KEY,
+      url TEXT NOT NULL,
+      upload_time TIMESTAMP NOT NULL,
+      blessing TEXT
+    );
+  `);
+};
+
+// נקודת בדיקה
 app.get('/', (req, res) => {
-  res.send('🟢 OK');
+  res.send('🟢 NEW VERSION');
 });
 
-// Fetch images
+
+// שליפת תמונות
 app.get('/images', async (req, res) => {
   try {
     const result = await pool.query(
@@ -56,46 +70,43 @@ app.get('/images', async (req, res) => {
   }
 });
 
-// Upload single image
+// נקודת העלאה עם ברכה
 app.post('/upload', upload.single('image'), async (req, res) => {
-  console.log('Upload request received');
-  console.log('req.file:', req.file);
+  console.log('📥 Upload request received');
+  console.log('File:', req.file);
+  console.log('Body:', req.body);
 
   if (!req.file) {
-    console.log('No file uploaded');
+    console.log('❌ No file uploaded');
     return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
 
   const now = new Date().toISOString();
   const imageUrl = req.file.secure_url || req.file.path || req.file.url;
+  const blessing = req.body.blessing || null;
 
-  if (!imageUrl) {
-    console.error('Invalid file:', req.file);
-    return res.status(400).json({ success: false, message: 'Invalid file' });
-  }
+  console.log('Parsed blessing:', blessing);
 
   try {
-    await pool.query(
-      'INSERT INTO "wedding-album" (url, upload_time) VALUES ($1, $2)',
-      [imageUrl, now]
-    );
+    const query = 'INSERT INTO "wedding-album" (url, upload_time, blessing) VALUES ($1, $2, $3)';
+    const values = [imageUrl, now, blessing];
+    await pool.query(query, values);
+    console.log('✅ Upload saved successfully to DB');
     res.json({ success: true, message: 'Upload complete' });
   } catch (err) {
-    console.error('Error saving image to DB:', err);
-    res.status(500).json({ success: false, message: 'Error saving file: ' + err.message });
+    console.error('❌ DB insert failed:', err);
+    res.status(500).json({ success: false, message: 'DB insert error' });
   }
 });
 
-// Connect to the database first, then start the server
-pool
-  .connect()
-  .then(client => {
-    client.release();
-    app.listen(port, '0.0.0.0', () => {
-      console.log(`✅ Server running on port ${port}`);
-    });
-  })
-  .catch(err => {
-    console.error('❌ Failed to connect to DB:', err);
-    process.exit(1);
+// התחלת שרת
+pool.connect().then(async client => {
+  client.release();
+  await createTableIfNotExists();
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`🚀 Server running on port ${port}`);
   });
+}).catch(err => {
+  console.error('❌ Failed to connect to DB:', err);
+  process.exit(1);
+});
