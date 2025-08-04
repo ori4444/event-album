@@ -69,42 +69,26 @@ app.get('/images', async (req, res) => {
 
 // העלאת תמונה
 app.post('/upload', upload.single('image'), async (req, res) => {
-  console.log('\n📤 ==== קיבלת בקשת upload ====');
+  console.log('📥 Upload request received');
+  console.log('🖼️ req.file:', req.file);
+  console.log('📦 req.body:', req.body); // אמור להופיע גם blessing כאן
 
-  if (!req.file) {
-    console.log('❌ לא התקבל קובץ (req.file חסר)');
-    return res.status(400).json({ success: false, message: 'No file uploaded' });
-  }
-
-  console.log('✅ קובץ התקבל:');
-  console.log('fieldname:', req.file.fieldname);
-  console.log('originalname:', req.file.originalname);
-  console.log('mimetype:', req.file.mimetype);
-  console.log('path:', req.file.path);
-  console.log('secure_url:', req.file.secure_url);
-  console.log('size:', req.file.size);
-
-  console.log('\n📦 נתוני טופס נוספים (req.body):');
-  console.dir(req.body);
-
-  const imageUrl = req.file.secure_url || req.file.path || req.file.url;
   const now = new Date().toISOString();
+  const imageUrl = req.file?.secure_url || req.file?.path || req.file?.url;
   const blessing = req.body?.blessing || null;
-
-  console.log('\n💬 ברכה מזוהה:', blessing || '[אין]');
 
   try {
     const query = 'INSERT INTO "wedding-album" (url, upload_time, blessing) VALUES ($1, $2, $3)';
     const values = [imageUrl, now, blessing];
-    console.log('📝 מוסיף למסד נתונים:', values);
     await pool.query(query, values);
-    console.log('✅ הוכנס בהצלחה למסד הנתונים');
+    console.log('✅ Upload saved successfully to DB');
     res.json({ success: true, message: 'Upload complete' });
   } catch (err) {
-    console.error('❌ שגיאה בהכנסה ל־DB:', err);
+    console.error('❌ DB insert failed:', err);
     res.status(500).json({ success: false, message: 'DB insert error' });
   }
 });
+
 
 // התחלת שרת
 pool.connect().then(async client => {
