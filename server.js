@@ -55,17 +55,19 @@ app.get('/', (req, res) => {
 });
 
 // שליפת תמונות
+// שליפת תמונות עם ברכות
 app.get('/images', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT url FROM "wedding-album" ORDER BY upload_time ASC'
+      'SELECT url, blessing FROM "wedding-album" ORDER BY upload_time ASC'
     );
-    res.json(result.rows.map(row => row.url));
+    res.json(result.rows);
   } catch (err) {
     console.error('❌ Error retrieving images:', err);
     res.status(500).json({ error: 'Error retrieving images' });
   }
 });
+
 
 // העלאת תמונה
 app.post('/upload', upload.single('image'), async (req, res) => {

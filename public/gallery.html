@@ -291,10 +291,11 @@ async function uploadImages() {
       isFirst = false;
     }
 
-    const response = await fetch('/upload', {
-      method: 'POST',
-      body: formData
-    });
+const response = await fetch('https://event-album-production.up.railway.app/upload', {
+  method: 'POST',
+  body: formData
+});
+
 
     const result = await response.json();
     console.log("📥 Upload response:", result);
@@ -305,7 +306,8 @@ async function uploadImages() {
 
 
     async function fetchImages() {
-      const res = await fetch('/images');
+      const res = await fetch('https://event-album-production.up.railway.app/images');
+
       const data = await res.json();
       images.push(...data);
       loadGallery();
