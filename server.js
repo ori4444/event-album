@@ -69,7 +69,7 @@ app.get('/images', async (req, res) => {
 
 // העלאת תמונה
 app.post('/upload', upload.single('image'), async (req, res) => {
-  console.log('📥 Upload request received');
+  console.log('📥 Upload request receivedddגג');
   console.log('🖼️ req.file:', req.file);
   console.log('📦 req.body:', req.body); // אמור להופיע גם blessing כאן
 
