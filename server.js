@@ -34,8 +34,6 @@ const pool = new Pool({
 
 app.use(cors());
 app.use(express.static('public'));
-
-// ❗ חיוני לנתח שדות טופס שאינם קבצים
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -53,9 +51,8 @@ const createTableIfNotExists = async () => {
 
 // נקודת בדיקה
 app.get('/', (req, res) => {
-  res.send('🟢 NEW VERSION');
+  res.send('🟢 SERVER ONLINE');
 });
-
 
 // שליפת תמונות
 app.get('/images', async (req, res) => {
@@ -65,49 +62,49 @@ app.get('/images', async (req, res) => {
     );
     res.json(result.rows.map(row => row.url));
   } catch (err) {
-    console.error('Error retrieving images:', err);
+    console.error('❌ Error retrieving images:', err);
     res.status(500).json({ error: 'Error retrieving images' });
   }
 });
 
-// נקודת העלאה עם ברכה
-app.post('/upload', (req, res) => {
-  const multerMiddleware = upload.single('image');
+// העלאת תמונה
+app.post('/upload', upload.single('image'), async (req, res) => {
+  console.log('\n📤 ==== קיבלת בקשת upload ====');
 
-  multerMiddleware(req, res, async function (err) {
-    if (err) {
-      console.error('❌ Multer error:', err);
-      return res.status(500).json({ success: false, message: 'Upload error' });
-    }
+  if (!req.file) {
+    console.log('❌ לא התקבל קובץ (req.file חסר)');
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
+  }
 
-    console.log('📥 Upload request received');
-    console.log('req.file:', req.file);
-    console.log('req.body:', req.body);
+  console.log('✅ קובץ התקבל:');
+  console.log('fieldname:', req.file.fieldname);
+  console.log('originalname:', req.file.originalname);
+  console.log('mimetype:', req.file.mimetype);
+  console.log('path:', req.file.path);
+  console.log('secure_url:', req.file.secure_url);
+  console.log('size:', req.file.size);
 
-    if (!req.file) {
-      console.log('❌ No file uploaded');
-      return res.status(400).json({ success: false, message: 'No file uploaded' });
-    }
+  console.log('\n📦 נתוני טופס נוספים (req.body):');
+  console.dir(req.body);
 
-    const now = new Date().toISOString();
-    const imageUrl = req.file.secure_url || req.file.path || req.file.url;
-    const blessing = req.body.blessing || null;
+  const imageUrl = req.file.secure_url || req.file.path || req.file.url;
+  const now = new Date().toISOString();
+  const blessing = req.body?.blessing || null;
 
-    console.log('Parsed blessing:', blessing);
+  console.log('\n💬 ברכה מזוהה:', blessing || '[אין]');
 
-    try {
-      const query = 'INSERT INTO "wedding-album" (url, upload_time, blessing) VALUES ($1, $2, $3)';
-      const values = [imageUrl, now, blessing];
-      await pool.query(query, values);
-      console.log('✅ Upload saved successfully to DB');
-      res.json({ success: true, message: 'Upload complete' });
-    } catch (err) {
-      console.error('❌ DB insert failed:', err);
-      res.status(500).json({ success: false, message: 'DB insert error' });
-    }
-  });
+  try {
+    const query = 'INSERT INTO "wedding-album" (url, upload_time, blessing) VALUES ($1, $2, $3)';
+    const values = [imageUrl, now, blessing];
+    console.log('📝 מוסיף למסד נתונים:', values);
+    await pool.query(query, values);
+    console.log('✅ הוכנס בהצלחה למסד הנתונים');
+    res.json({ success: true, message: 'Upload complete' });
+  } catch (err) {
+    console.error('❌ שגיאה בהכנסה ל־DB:', err);
+    res.status(500).json({ success: false, message: 'DB insert error' });
+  }
 });
-
 
 // התחלת שרת
 pool.connect().then(async client => {
