@@ -19,14 +19,39 @@
 
     .moving-img {
       position: absolute;
-      object-fit: contain;
-      border-radius: 1vh;
+      object-fit: cover;
       width: 15vw;
-      height: auto;
+      height: 15vw;
       pointer-events: none;
-      border: 0.25vh solid #b0b7c3;
-      box-shadow: 0 0 1vh rgba(176, 183, 195, 0.35);
-      background-color: #fdfdfd;
+    }
+
+    .shape-circle {
+      clip-path: circle(50%);
+    }
+
+    .shape-ellipse {
+      clip-path: ellipse(50% 35% at 50% 50%);
+    }
+
+    .shape-star {
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+
+    .shape-heart {
+      clip-path: path('M50% 90% C0% 60%, 0% 20%, 50% 40% C100% 20%, 100% 60%, 50% 90%');
+    }
+
+    .shape-diamond {
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    }
+
+   .shape-triangle {
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
+
+
+    .shape-rounded-rect {
+      clip-path: inset(0 round 20% 20%);
     }
 
     .spinning-wrapper {
@@ -43,7 +68,7 @@
     .floating-blessing {
       position: absolute;
       font-size: 1.8vh;
-      color: red;
+      color: rgb(47, 0, 255);
       z-index: 100;
       text-align: center;
       text-shadow: 1px 1px 2px white;
@@ -65,17 +90,26 @@
       { dx: -1.5, dy: 1.2, spin: true, spinSpeed: 22, scale: 1.9 }
     ];
 
-    // הגדרה של 4 מיקומים בלבד
+    const shapeClasses = [
+      'shape-circle',
+      'shape-ellipse',
+      'shape-star',
+      'shape-heart',
+      'shape-diamond',
+      'shape-triangle',
+      'shape-rounded-rect'
+    ];
+
     const blessingPositions = [
-      { top: '6vh', left: '5vw', rotate: '-4deg' },
-      { top: '6vh', right: '5vw', rotate: '5deg' },
-      { bottom: '6vh', left: '5vw', rotate: '3deg' },
-      { bottom: '6vh', right: '5vw', rotate: '-3deg' }
+      { top: '5vh', left: '5vw', rotate: '-5deg' },
+      { top: '10vh', right: '5vw', rotate: '6deg' },
+      { bottom: '10vh', left: '7vw', rotate: '3deg' },
+      { bottom: '5vh', right: '10vw', rotate: '-4deg' }
     ];
 
     const images = [];
 
-    function createImage(url, settings) {
+    function createImage(url, settings, shapeClass) {
       const wrapper = document.createElement('div');
       wrapper.style.position = 'absolute';
 
@@ -95,7 +129,7 @@
 
       const img = new Image();
       img.src = url;
-      img.className = 'moving-img';
+      img.className = `moving-img ${shapeClass}`;
       img.style.transform = `scale(${settings.scale})`;
 
       const container = document.createElement('div');
@@ -120,8 +154,10 @@
         const el = document.createElement('div');
         el.className = 'floating-blessing';
         el.textContent = text;
+
         Object.assign(el.style, pos);
         el.style.transform = `rotate(${pos.rotate})`;
+
         document.body.appendChild(el);
       });
     }
@@ -183,8 +219,6 @@
 
     window.addEventListener('message', event => {
       const data = event.data.images || [];
-
-      // ניקוי הקודם
       document.querySelectorAll('.moving-img, .floating-blessing, .spinning-wrapper').forEach(el => {
         if (el.parentNode) el.parentNode.remove();
       });
@@ -192,9 +226,14 @@
       images.length = 0;
 
       const urls = data.map(obj => obj.url);
-      const blessings = data.map(obj => obj.blessing).filter(b => b?.trim());
+      const rawBlessings = data.map(obj => obj.blessing);
+      const blessings = rawBlessings.filter(b => b?.trim());
 
-      urls.slice(0, 7).forEach((url, i) => createImage(url, imageSettings[i]));
+      urls.slice(0, 7).forEach((url, i) => {
+        const shape = shapeClasses[i % shapeClasses.length];
+        createImage(url, imageSettings[i], shape);
+      });
+
       showBlessings(blessings);
       animate();
     });

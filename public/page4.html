@@ -26,6 +26,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
     .dynamic-frame {
@@ -46,8 +47,9 @@
       height: 50vh;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-end;
       padding-bottom: 12vh;
+      position: relative;
     }
 
     .bottom-photo {
@@ -61,6 +63,39 @@
       background-color: rgba(255, 255, 255, 0.01);
       display: none;
     }
+
+    .blessing {
+      position: absolute;
+      color: gold;
+      font-size: 1.3vh;
+      padding: 0.6vh 1vh;
+      border-radius: 1vh;
+      max-width: 60vw;
+      text-align: center;
+      pointer-events: none;
+      white-space: pre-wrap;
+    }
+
+    .top-blessing {
+      top: 5vh;
+    }
+
+    .bottom-blessing-0 {
+      left: 12vw;
+      bottom: 30vh;
+      transform: rotate(-3deg);
+    }
+
+    .bottom-blessing-1 {
+      left: 38vw;
+      bottom: 30vh;
+    }
+
+    .bottom-blessing-2 {
+      left: 65vw;
+      bottom: 30vh;
+      transform: rotate(2deg);
+    }
   </style>
 </head>
 <body>
@@ -70,17 +105,22 @@
     <img id="p3" class="bottom-photo" />
     <img id="p4" class="bottom-photo" />
   </div>
+
   <script>
     window.addEventListener('message', (event) => {
-      const urls = event.data.images;
+      const images = event.data.images;
+      console.log("📥 Received images:", images);
+
       const topContainer = document.getElementById('top-container');
+      const bottomContainer = document.getElementById('bottom-container');
 
       topContainer.innerHTML = '';
+      document.querySelectorAll('.blessing').forEach(b => b.remove());
 
       // Top image
-      if (urls[0]) {
+      if (images[0] && images[0].url) {
         const img = new Image();
-        img.src = urls[0];
+        img.src = images[0].url;
         img.className = 'top-photo';
         img.onload = () => {
           const maxW = window.innerWidth * 0.7;
@@ -93,6 +133,13 @@
           frame.className = 'dynamic-frame';
           frame.appendChild(img);
           topContainer.appendChild(frame);
+
+          if (images[0].blessing) {
+            const bless = document.createElement('div');
+            bless.className = 'blessing top-blessing';
+            bless.textContent = images[0].blessing;
+            topContainer.appendChild(bless);
+          }
         };
       }
 
@@ -103,9 +150,17 @@
       ];
 
       bottomImgs.forEach((img, index) => {
-        if (urls[index + 1]) {
-          img.src = urls[index + 1];
+        const data = images[index + 1];
+        if (data && data.url) {
+          img.src = data.url;
           img.style.display = 'block';
+
+          if (data.blessing) {
+            const bless = document.createElement('div');
+            bless.className = `blessing bottom-blessing-${index}`;
+            bless.textContent = data.blessing;
+            bottomContainer.appendChild(bless);
+          }
         } else {
           img.style.display = 'none';
         }
@@ -114,3 +169,4 @@
   </script>
 </body>
 </html>
+ד

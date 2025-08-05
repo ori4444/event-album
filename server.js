@@ -8,7 +8,32 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Cloudinary setup
+// ✅ CORS setup
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://event-album-production.up.railway.app'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
+// ✅ Handle preflight OPTIONS requests
+app.options('*', cors());
+
+// ✅ Middleware
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// ✅ Cloudinary setup
 cloudinary.config({
   cloud_name: 'dbpxjgghy',
   api_key: '615724297644761',
@@ -26,34 +51,13 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
-// PostgreSQL setup
+// ✅ PostgreSQL setup
 const pool = new Pool({
   connectionString: 'postgresql://postgres:jGilwsxTNfEruQtfzHzIyBZVugDQVvnv@shortline.proxy.rlwy.net:43346/railway',
   ssl: { rejectUnauthorized: false }
 });
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://event-album-production.up.railway.app'
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // בקשות ללא origin (למשל curl) יאושרו
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
-
-app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-// יצירת טבלה אם לא קיימת
+// ✅ יצירת טבלה אם לא קיימת
 const createTableIfNotExists = async () => {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS "wedding-album" (
@@ -65,13 +69,12 @@ const createTableIfNotExists = async () => {
   `);
 };
 
-// נקודת בדיקה
+// ✅ נקודת בדיקה
 app.get('/', (req, res) => {
   res.send('🟢 SERVER ONLINE');
 });
 
-// שליפת תמונות
-// שליפת תמונות עם ברכות
+// ✅ שליפת תמונות
 app.get('/images', async (req, res) => {
   try {
     const result = await pool.query(
@@ -84,12 +87,11 @@ app.get('/images', async (req, res) => {
   }
 });
 
-
-// העלאת תמונה
+// ✅ העלאת תמונה
 app.post('/upload', upload.single('image'), async (req, res) => {
-  console.log('📥 Upload request receivedddגג');
+  console.log('📥 Upload request received');
   console.log('🖼️ req.file:', req.file);
-  console.log('📦 req.body:', req.body); // אמור להופיע גם blessing כאן
+  console.log('🙏 req.body:', req.body);
 
   const now = new Date().toISOString();
   const imageUrl = req.file?.secure_url || req.file?.path || req.file?.url;
@@ -99,16 +101,52 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     const query = 'INSERT INTO "wedding-album" (url, upload_time, blessing) VALUES ($1, $2, $3)';
     const values = [imageUrl, now, blessing];
     await pool.query(query, values);
-    console.log('✅ Upload saved successfully to DB');
+    console.log('✅ Upload saved to DB');
     res.json({ success: true, message: 'Upload complete' });
   } catch (err) {
     console.error('❌ DB insert failed:', err);
     res.status(500).json({ success: false, message: 'DB insert error' });
   }
 });
+// ✅ הוספת ברכה בלבד
+app.post('/add-blessing', async (req, res) => {
+  const { blessing } = req.body;
 
+  if (!blessing || blessing.trim() === '') {
+    return res.status(400).json({ success: false, message: 'Missing blessing' });
+  }
 
-// התחלת שרת
+  try {
+    // חפש את התמונה הראשונה שאין לה ברכה
+    const findResult = await pool.query(`
+      SELECT id FROM "wedding-album"
+      WHERE blessing IS NULL
+      ORDER BY upload_time ASC
+      LIMIT 1
+    `);
+
+    if (findResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'No image without blessing found' });
+    }
+
+    const imageId = findResult.rows[0].id;
+
+    // עדכן את השדה blessing
+    await pool.query(`
+      UPDATE "wedding-album"
+      SET blessing = $1
+      WHERE id = $2
+    `, [blessing, imageId]);
+
+    console.log(`✅ Blessing added to image ID ${imageId}`);
+    res.json({ success: true, message: 'Blessing added' });
+  } catch (err) {
+    console.error('❌ Error adding blessing:', err);
+    res.status(500).json({ success: false, message: 'DB update error' });
+  }
+});
+
+// ✅ התחלת שרת
 pool.connect().then(async client => {
   client.release();
   await createTableIfNotExists();
