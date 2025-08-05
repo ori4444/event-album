@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wedding Album - Page 1 Collage</title>
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
@@ -110,19 +109,49 @@
       position: absolute;
       top: 4vh;
       left: 50%;
-      transform: translateX(-50%) rotate(-2deg);
+      transform: translateX(-50%) rotate(-5deg);
       color: #5A3921;
-      font-family: 'Dancing Script', cursive !important;
-      font-size: 3.2vh;
+      font-family: 'Varela Round', sans-serif !important;
+      font-size: 2.2vh;
       padding: 1vh 2vw;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       z-index: 999;
       max-width: 90vw;
       text-align: center;
       display: none;
+      text-shadow:
+  -0.2px -0.2px 0 white,
+   0.2px -0.2px 0 white,
+  -0.2px  0.2px 0 white,
+   0.2px  0.2px 0 white;
+
     }
+
+    .blessing2, .blessing3, .blessing4 {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 45%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Varela Round', sans-serif;
+      font-size: 2vh;
+      color: #5A3921;
+      text-shadow:
+        -1px -1px 0 white,
+         1px -1px 0 white,
+        -1px  1px 0 white,
+         1px  1px 0 white;
+      padding: 1vh;
+      text-align: center;
+      background: none;
+      pointer-events: none;
+    }
+
+    .blessing2 { left: -48%; }
+    .blessing3 { right: -48%; }
+    .blessing4 { left: -48%; }
+
   </style>
 </head>
 
@@ -132,9 +161,18 @@
 
   <div class="container" id="imageContainer">
     <div class="image-wrapper" id="wrapper1" style="--rand: 0.1"><img id="img1"></div>
-    <div class="image-wrapper" id="wrapper2" style="--rand: 0.7"><img id="img2"></div>
-    <div class="image-wrapper" id="wrapper3" style="--rand: 0.3"><img id="img3"></div>
-    <div class="image-wrapper" id="wrapper4" style="--rand: 0.9"><img id="img4"></div>
+    <div class="image-wrapper" id="wrapper2" style="--rand: 0.7">
+      <img id="img2">
+      <div class="blessing2"></div>
+    </div>
+    <div class="image-wrapper" id="wrapper3" style="--rand: 0.3">
+      <img id="img3">
+      <div class="blessing3"></div>
+    </div>
+    <div class="image-wrapper" id="wrapper4" style="--rand: 0.9">
+      <img id="img4">
+      <div class="blessing4"></div>
+    </div>
   </div>
 
 <script>
@@ -147,19 +185,24 @@
 
     urls.forEach((imgObj, i) => {
       const img = document.getElementById(`img${i + 1}`);
+      const blessingEl = document.querySelector(`.blessing${i + 1}`);
       if (img && imgObj.url) {
         img.src = imgObj.url;
         console.log(`✅ Set img${i + 1} src to`, imgObj.url);
       }
-    });
 
-    const firstBlessing = urls[0]?.blessing;
-    if (firstBlessing && firstBlessing.trim() !== '') {
-      const globalBlessing = document.getElementById('globalBlessing');
-      globalBlessing.textContent = firstBlessing;
-      globalBlessing.style.display = 'block';
-      console.log("🌸 Global blessing shown:", firstBlessing);
-    }
+      if (i === 0 && imgObj.blessing) {
+        const globalBlessing = document.getElementById('globalBlessing');
+        globalBlessing.textContent = imgObj.blessing;
+        globalBlessing.style.display = 'block';
+        console.log("🌸 Global blessing shown:", imgObj.blessing);
+      }
+
+      if (i > 0 && blessingEl && imgObj.blessing && imgObj.blessing.trim() !== '') {
+        blessingEl.textContent = imgObj.blessing;
+        console.log(`🌼 Blessing${i + 1} set to:`, imgObj.blessing);
+      }
+    });
 
     for (let i = urls.length; i < 4; i++) {
       const wrapper = document.getElementById(`wrapper${i + 1}`);

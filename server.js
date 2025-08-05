@@ -32,7 +32,23 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://event-album-production.up.railway.app'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // בקשות ללא origin (למשל curl) יאושרו
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
