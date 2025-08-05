@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wedding Album - Fixed Center Video Only</title>
-  
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+
   <style>
 html, body {
   margin: 0;
@@ -62,15 +63,8 @@ html, body {
       animation: pulse 4s infinite ease-in-out;
     }
 
-    .blessing-text {
-      margin-top: 1vh;
-      font-size: 2.2vh;
-      font-family: 'Playfair Display', serif;
-      color: #333;
-      text-align: center;
-      max-width: 80vw;
-      white-space: pre-wrap;
-    }
+
+
 
     .full-wrapper {
       flex-grow: 1;
@@ -149,6 +143,24 @@ html, body {
       z-index: 5;
       pointer-events: none;
     }
+.floating-blessing {
+  font-family: 'Varela Round', sans-serif;
+  font-size: 1.8vh;
+  color: red;
+  text-align: center;
+  max-width: 18vw;
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+}
+
+
+
+
+@keyframes floatIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
 
     .center-piece video {
       width: 130%;
@@ -194,7 +206,10 @@ html, body {
 
   <script>
     window.addEventListener('message', (event) => {
-      const urls = event.data.images;
+      const imageObjects = event.data.images || [];
+const urls = imageObjects.map(obj => obj.url);
+const blessings = imageObjects.map(obj => obj.blessing).filter(Boolean);
+
       const blessing = event.data.blessing || '';
       const container = document.getElementById('gridContainer');
       container.innerHTML = '';
@@ -291,12 +306,6 @@ html, body {
         topRow.forEach(img => innerRow.appendChild(img));
         topWrapper.appendChild(innerRow);
 
-        if (blessing) {
-          const blessingEl = document.createElement('p');
-          blessingEl.className = 'blessing-text';
-          blessingEl.textContent = blessing;
-          topWrapper.appendChild(blessingEl);
-        }
       }
 
       const bottomWrapper = document.getElementById('bottomRowWrapper');
@@ -317,7 +326,32 @@ html, body {
       video.muted = true;
       center.appendChild(video);
       container.appendChild(center);
-    });
+
+    
+
+const predefinedPositions = [
+  { top: '6vh', left: '6vw', textAlign: 'left' },        // Top Left
+  { top: '6vh', right: '6vw', textAlign: 'right' },      // Top Right
+  { bottom: '6vh', left: '6vw', textAlign: 'left' },     // Bottom Left
+  { bottom: '6vh', right: '6vw', textAlign: 'right' },   // Bottom Right
+  { top: '40vh', left: '10vw', textAlign: 'center' },    // Center Left
+  { top: '40vh', right: '10vw', textAlign: 'center' }    // Center Right
+];
+
+blessings.slice(0, 6).forEach((text, i) => {
+  const el = document.createElement('div');
+  el.className = 'floating-blessing';
+  el.textContent = text;
+
+  const pos = predefinedPositions[i];
+  Object.assign(el.style, pos);
+
+  container.appendChild(el);
+});
+
+
+});
+
   </script>
 </body>
 </html>

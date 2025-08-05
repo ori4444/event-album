@@ -52,15 +52,18 @@
       transform: scale(1.03) rotate(calc(-6deg + 12deg * var(--rand, 0)));
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
+.image-wrapper {
+  position: relative;
+  left: var(--zigzag, 0);
+  transform: rotate(calc(-6deg + 12deg * var(--rand, 0)));
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 8px;
+  background-color: white;
+  padding: 1vh 1.5vw 2.5vh 1.5vw;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 0; /* ← הוסף את זה */
+}
 
-    .image-wrapper img {
-      width: auto;
-      height: auto;
-      max-width: 90vw;
-      object-fit: contain;
-      display: block;
-      border-radius: 8px;
-    }
 
     .image-wrapper::before {
       content: '';
@@ -112,17 +115,17 @@
       transform: translateX(-50%) rotate(-5deg);
       color: #5A3921;
       font-family: 'Varela Round', sans-serif !important;
-      font-size: 2.2vh;
+      font-size: 1.2vh;
       padding: 1vh 2vw;
       z-index: 999;
       max-width: 90vw;
       text-align: center;
       display: none;
       text-shadow:
-  -0.2px -0.2px 0 white,
-   0.2px -0.2px 0 white,
-  -0.2px  0.2px 0 white,
-   0.2px  0.2px 0 white;
+  -0.05px -0.05px 0 white,
+   0.05px -0.05px 0 white,
+  -0.05px  0.05px 0 white,
+   0.05px  0.05px 0 white;
 
     }
 
@@ -135,17 +138,18 @@
       align-items: center;
       justify-content: center;
       font-family: 'Varela Round', sans-serif;
-      font-size: 2vh;
+      font-size: 1vh;
       color: #5A3921;
       text-shadow:
-        -1px -1px 0 white,
-         1px -1px 0 white,
-        -1px  1px 0 white,
-         1px  1px 0 white;
+  -0.05px -0.05px 0 white,
+   0.05px -0.05px 0 white,
+  -0.05px  0.05px 0 white,
+   0.05px  0.05px 0 white;
       padding: 1vh;
       text-align: center;
       background: none;
       pointer-events: none;
+      z-index: 20;
     }
 
     .blessing2 { left: -48%; }

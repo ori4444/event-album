@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wedding Album - Bounce Motion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
@@ -13,6 +14,7 @@
       width: 100vw;
       background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1753978920/ChatGPT_Image_Jul_31_2025_07_16_17_PM_sothpf.png') no-repeat center center fixed;
       background-size: cover;
+      font-family: 'Varela Round', sans-serif;
     }
 
     .moving-img {
@@ -37,6 +39,18 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    .floating-blessing {
+      position: absolute;
+      font-size: 1.8vh;
+      color: red;
+      z-index: 100;
+      text-align: center;
+      text-shadow: 1px 1px 2px white;
+      max-width: 20vw;
+      transform: rotate(-5deg);
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -49,6 +63,14 @@
       { dx: 1.4, dy: -1.2, spin: false, spinSpeed: 0, scale: 2.0 },
       { dx: -1.3, dy: 1.6, spin: false, spinSpeed: 0, scale: 2.1 },
       { dx: -1.5, dy: 1.2, spin: true, spinSpeed: 22, scale: 1.9 }
+    ];
+
+    // הגדרה של 4 מיקומים בלבד
+    const blessingPositions = [
+      { top: '6vh', left: '5vw', rotate: '-4deg' },
+      { top: '6vh', right: '5vw', rotate: '5deg' },
+      { bottom: '6vh', left: '5vw', rotate: '3deg' },
+      { bottom: '6vh', right: '5vw', rotate: '-3deg' }
     ];
 
     const images = [];
@@ -92,6 +114,18 @@
       images.push({ el: wrapper, dx: adjustedDx, dy: adjustedDy });
     }
 
+    function showBlessings(blessings) {
+      blessings.slice(0, blessingPositions.length).forEach((text, i) => {
+        const pos = blessingPositions[i];
+        const el = document.createElement('div');
+        el.className = 'floating-blessing';
+        el.textContent = text;
+        Object.assign(el.style, pos);
+        el.style.transform = `rotate(${pos.rotate})`;
+        document.body.appendChild(el);
+      });
+    }
+
     function animate() {
       const w = window.innerWidth;
       const h = window.innerHeight;
@@ -110,11 +144,9 @@
         const nextX = x + img.dx;
         const nextY = y + img.dy;
 
-        // שינוי כיוון מיידי אם חורגת
         if (nextX < 0 || nextX + width > w) img.dx *= -1;
         if (nextY < 0 || nextY + height > h) img.dy *= -1;
 
-        // התנגשויות
         for (let j = 0; j < images.length; j++) {
           if (i !== j) {
             const other = images[j];
@@ -150,10 +182,20 @@
     }
 
     window.addEventListener('message', event => {
-      const urls = event.data.images || [];
-      document.body.innerHTML = '';
+      const data = event.data.images || [];
+
+      // ניקוי הקודם
+      document.querySelectorAll('.moving-img, .floating-blessing, .spinning-wrapper').forEach(el => {
+        if (el.parentNode) el.parentNode.remove();
+      });
+
       images.length = 0;
+
+      const urls = data.map(obj => obj.url);
+      const blessings = data.map(obj => obj.blessing).filter(b => b?.trim());
+
       urls.slice(0, 7).forEach((url, i) => createImage(url, imageSettings[i]));
+      showBlessings(blessings);
       animate();
     });
   </script>
