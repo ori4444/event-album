@@ -120,15 +120,16 @@ app.post('/upload-blessing-only', async (req, res) => {
 
   try {
     const result = await pool.query(`
-      UPDATE "wedding-album"
-      SET blessing = $1
-      WHERE id = (
-        SELECT id FROM "wedding-album"
-        WHERE blessing IS NULL
-        ORDER BY upload_time DESC
-        LIMIT 1
-      )
-      RETURNING *;
+UPDATE "wedding-album"
+SET blessing = $1
+WHERE id = (
+  SELECT id FROM "wedding-album"
+  WHERE blessing IS NULL
+  ORDER BY RANDOM()
+  LIMIT 1
+)
+RETURNING *;
+
     `, [blessing]);
 
     if (result.rowCount === 0) {

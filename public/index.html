@@ -189,6 +189,23 @@ html, body {
         }
       }
     });
+    window.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('scrollAfterUpload') === 'true') {
+    sessionStorage.removeItem('scrollAfterUpload');
+
+    // נמתין כדי שכל ה־iframes ייטענו
+    setTimeout(() => {
+      const albumFrames = document.querySelectorAll('iframe');
+      const lastFrame = albumFrames[albumFrames.length - 1];
+
+      if (lastFrame) {
+        lastFrame.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+    }, 800); // תזמון מותאם לטעינה שלך
+  }
+  });
   </script>
 </body>
 </html>

@@ -363,10 +363,14 @@ toggleBtn.addEventListener('click', async () => {
   const blessingText = document.getElementById('uploadText').value.trim();
   const hasFiles = selectedFiles.length > 0;
   const uploadMenu = document.getElementById('extra-upload');
-const isOpen = uploadMenu.classList.contains('open');
+  const isOpen = uploadMenu.classList.contains('open');
 
-
-  if (isOpen && !hasFiles && blessingText !== '') {
+  if (isOpen && hasFiles) {
+    // ✅ במקרה שיש קבצים נבחרים – מעלים כרגיל
+    console.log('📤 Uploading images and blessing...');
+    uploadImages();
+  } 
+  else if (isOpen && !hasFiles && blessingText !== '') {
     // ✅ שלח רק ברכה (לשרת)
     console.log('📤 Sending blessing only...');
     barSpinner.style.display = 'flex';
@@ -382,7 +386,10 @@ const isOpen = uploadMenu.classList.contains('open');
 
       if (data.success) {
         console.log('✅ Blessing uploaded successfully');
-        window.location.href = '/index.html'; // 🔁 מעבר לאלבום
+        // ⬇️ גלילה לתחתית ואז מעבר
+        setTimeout(() => {
+          window.location.href = '/index.html';
+        }, 300);
       } else {
         alert(data.message || 'אירעה שגיאה בשליחת הברכה');
       }
@@ -392,11 +399,17 @@ const isOpen = uploadMenu.classList.contains('open');
     } finally {
       barSpinner.style.display = 'none';
     }
-  } else {
-    // התנהגות רגילה (סגור או פתח את הבר)
-    toggleUploadMenu(!isOpen);
+  } 
+  else if (isOpen) {
+    // 🔽 אם פתוח ואין כלום – פשוט סגור
+    toggleUploadMenu(false);
+  } 
+  else {
+    // 🔼 אם סגור – פתח את הבר
+    toggleUploadMenu(true);
   }
 });
+
 
 const albumBtn = document.querySelector('.album-btn');
 
