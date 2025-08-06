@@ -15,9 +15,16 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: true, // מאפשר לכל מקור (לבדיקות ופיתוח)
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
+
 
 
 // ✅ Handle preflight OPTIONS requests
@@ -101,6 +108,38 @@ app.post('/upload', upload.single('image'), async (req, res) => {
   } catch (err) {
     console.error('❌ DB insert failed:', err);
     res.status(500).json({ success: false, message: 'DB insert error' });
+  }
+});
+// ✅ העלאת ברכה בלבד לתמונה האחרונה שאין לה ברכה
+app.post('/upload-blessing-only', async (req, res) => {
+  const { blessing } = req.body;
+
+  if (!blessing || blessing.trim() === '') {
+    return res.status(400).json({ success: false, message: 'Missing blessing' });
+  }
+
+  try {
+    const result = await pool.query(`
+      UPDATE "wedding-album"
+      SET blessing = $1
+      WHERE id = (
+        SELECT id FROM "wedding-album"
+        WHERE blessing IS NULL
+        ORDER BY upload_time DESC
+        LIMIT 1
+      )
+      RETURNING *;
+    `, [blessing]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: 'No image without blessing found' });
+    }
+
+    console.log('✅ Blessing added to last image without blessing:', result.rows[0]);
+    res.json({ success: true, message: 'Blessing added' });
+  } catch (err) {
+    console.error('❌ Failed to update blessing:', err);
+    res.status(500).json({ success: false, message: 'DB update error' });
   }
 });
 

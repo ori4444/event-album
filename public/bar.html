@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery Upload Bar Only</title>
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      font-family: 'Varela Round', sans-serif;
+      overflow-x: hidden;
+    }
+
+    #extra-upload {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      min-height: 33vh;
+      z-index: 998;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2vh 5vw;
+      gap: 2vh;
+      border-top: 8px solid black;
+      transform: translateY(100%);
+      transition: transform 0.5s ease;
+      box-sizing: border-box;
+    }
+
+    #extra-upload.open.with-preview {
+      height: 43vh;
+      transform: translateY(0%);
+    }
+
+    #extra-upload.open:not(.with-preview) {
+      height: 30vh;
+      transform: translateY(0%);
+    }
+
+    #preview-bar {
+      display: flex;
+      flex-direction: row;
+      gap: 1vw;
+      overflow-x: auto;
+      max-width: 100%;
+      justify-content: flex-start;
+    }
+
+    .preview-thumb {
+      width: 10vh;
+      height: 10vh;
+      object-fit: cover;
+      border-radius: 1vh;
+      border: 1px solid #ccc;
+    }
+
+    .upload-section {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 4vw;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    .left-side, .right-side {
+      display: flex;
+      align-items: center;
+    }
+
+    .left-side {
+      display: flex;
+      flex-direction: column;
+      gap: 2vh;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .upload-btn, .album-btn {
+      width: 10vh;
+      height: 6vh;
+      border-radius: 1vh;
+      background: white;
+      border: 2px solid #999;
+      color: black;
+      font-size: 3vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .upload-btn svg,
+    .album-btn svg {
+      width: 80%;
+      height: 80%;
+    }
+
+    #uploadText {
+      height: 14vh;
+      width: 100%;
+      font-size: 2.2vh;
+      color: gray;
+      padding: 2vh;
+      border: 1px solid #ccc;
+      border-radius: 1vh;
+      box-sizing: border-box;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    #toggleUpload {
+      position: fixed;
+      bottom: 2vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      width: 9vh;
+      height: 9vh;
+      border-radius: 50%;
+      background: #f8f8f8;
+      color: #444;
+      font-size: 7vh;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      font-family: Arial, sans-serif;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    #toggleUpload:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    #toggleUpload.selected {
+      background: green;
+      border-color: green;
+      color: white;
+    }
+
+#barSpinnerOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+
+
+    .spinner {
+      border: 8px solid white;
+      border-top: 8px solid black;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="extra-upload">
+    <div id="preview-bar"></div>
+    <div class="upload-section">
+      <div class="left-side">
+        <label class="upload-btn" for="uploadInput">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-3h8l2 3h3a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </label>
+
+        <a href="/" class="album-btn" title="Album">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+        </a>
+      </div>
+      <div class="right-side">
+        <textarea id="uploadText" maxlength="250" placeholder="הוסף ברכה לאלבום"
+          onfocus="this.placeholder=''" onblur="this.placeholder='הוסף ברכה לאלבום'" dir="rtl"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div id="toggleUpload">+</div>
+  <input type="file" id="uploadInput" accept="image/*,video/*" multiple style="display: none" />
+  <div id="barSpinnerOverlay" style="display: none; opacity: 0;"><div class="spinner"></div></div>
+
+
+
+  <script>
+
+
+    let uploadMenuVisible = false;
+    let selectedFiles = [];
+
+    const toggleBtn = document.getElementById('toggleUpload');
+    const barSpinner = document.getElementById('barSpinnerOverlay');
+
+
+    document.getElementById('uploadInput').addEventListener('change', (event) => {
+      selectedFiles = Array.from(event.target.files);
+      updatePreviewBar();
+      if (selectedFiles.length > 0) {
+        toggleUploadMenu(true);
+        toggleBtn.textContent = '✓';
+        toggleBtn.classList.add('selected');
+      }
+    });
+document.getElementById('uploadText').addEventListener('input', (e) => {
+  const text = e.target.value.trim();
+  if (text !== '' && selectedFiles.length === 0) {
+    toggleBtn.textContent = '✓';
+    toggleBtn.classList.add('selected');
+  } else if (text === '' && selectedFiles.length === 0) {
+    toggleBtn.textContent = '+';
+    toggleBtn.classList.remove('selected');
+  }
+});
+
+    function updatePreviewBar() {
+      const previewBar = document.getElementById('preview-bar');
+      previewBar.innerHTML = '';
+      selectedFiles.forEach(file => {
+        if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+          const media = document.createElement(file.type.startsWith('video/') ? 'video' : 'img');
+          media.className = 'preview-thumb';
+          media.src = URL.createObjectURL(file);
+          if (file.type.startsWith('video/')) {
+            media.autoplay = true;
+            media.loop = true;
+            media.muted = true;
+          }
+          previewBar.appendChild(media);
+        }
+      });
+    }
+
+async function uploadImages() {
+  const blessingText = document.getElementById('uploadText').value.trim();
+  let isFirst = true;
+
+  barSpinner.style.display = 'flex';
+  barSpinner.style.opacity = '1';
+
+  if (selectedFiles.length > 0) {
+    const uploadPromises = selectedFiles.map(file => {
+      const formData = new FormData();
+      formData.append('image', file);
+      if (isFirst && blessingText !== '') {
+        formData.append('blessing', blessingText);
+        isFirst = false;
+      }
+
+      return fetch('https://event-album-production.up.railway.app/upload', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.log('❌ Upload error:', err);
+          return { success: false };
+        });
+    });
+
+    const results = await Promise.all(uploadPromises);
+
+    toggleBtn.textContent = '➕';
+    toggleBtn.classList.remove('selected');
+
+    const anyFail = results.some(r => !r.success);
+    if (anyFail) {
+      alert("⚠️ חלק מהתמונות לא הועלו בהצלחה.");
+      barSpinner.style.display = 'none';
+      return;
+    }
+
+    window.location.href = '/index.html?scrollToBottom=true';
+  }
+
+  // ✅ אם אין קבצים אבל יש ברכה – נשלח את הברכה לבד
+  else if (blessingText !== '') {
+    try {
+      const response = await fetch('https://event-album-production.up.railway.app/upload-blessing-only', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ blessing: blessingText })
+      });
+
+      const result = await response.json();
+      console.log('✅ Blessing only response:', result);
+
+      if (result.success) {
+        window.location.href = '/index.html?scrollToBottom=true';
+      } else {
+        alert('⚠️ שמירת הברכה נכשלה.');
+        barSpinner.style.display = 'none';
+      }
+    } catch (err) {
+      console.error('❌ Error uploading blessing only:', err);
+      alert('⚠️ אירעה שגיאה בעת שליחת הברכה.');
+      barSpinner.style.display = 'none';
+    }
+  }
+
+  // ⛔ אם אין קבצים ואין ברכה – לא עושים כלום
+  else {
+    alert("⚠️ לא נבחרו קבצים ולא הוזנה ברכה.");
+    barSpinner.style.display = 'none';
+  }
+}
+
+
+
+
+    function toggleUploadMenu(forceOpen = null) {
+      const extra = document.getElementById('extra-upload');
+      if (forceOpen !== null) uploadMenuVisible = forceOpen;
+      else uploadMenuVisible = !uploadMenuVisible;
+
+      extra.classList.remove('with-preview');
+
+      if (uploadMenuVisible) {
+        extra.classList.add('open');
+        if (selectedFiles.length > 0) {
+          extra.classList.add('with-preview');
+        }
+      } else {
+        extra.classList.remove('open');
+      }
+    }
+
+toggleBtn.addEventListener('click', async () => {
+  const blessingText = document.getElementById('uploadText').value.trim();
+  const hasFiles = selectedFiles.length > 0;
+  const uploadMenu = document.getElementById('extra-upload');
+const isOpen = uploadMenu.classList.contains('open');
+
+
+  if (isOpen && !hasFiles && blessingText !== '') {
+    // ✅ שלח רק ברכה (לשרת)
+    console.log('📤 Sending blessing only...');
+    barSpinner.style.display = 'flex';
+    barSpinner.style.opacity = '1';
+
+    try {
+      const res = await fetch('https://event-album-production.up.railway.app/upload-blessing-only', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blessing: blessingText })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        console.log('✅ Blessing uploaded successfully');
+        window.location.href = '/index.html'; // 🔁 מעבר לאלבום
+      } else {
+        alert(data.message || 'אירעה שגיאה בשליחת הברכה');
+      }
+    } catch (err) {
+      console.error('❌ Blessing upload failed:', err);
+      alert('שגיאה בשליחת הברכה');
+    } finally {
+      barSpinner.style.display = 'none';
+    }
+  } else {
+    // התנהגות רגילה (סגור או פתח את הבר)
+    toggleUploadMenu(!isOpen);
+  }
+});
+
+const albumBtn = document.querySelector('.album-btn');
+
+  if (barSpinner) {
+    barSpinner.style.opacity = '0';
+    setTimeout(() => {
+      barSpinner.style.display = 'none';
+    }, 500);
+  }
+
+  if (albumBtn) {
+    const path = window.location.pathname;
+    const isIndex = path === '/' || path.includes('index.html');
+
+    if (isIndex) {
+      albumBtn.href = '/gallery.html';
+      albumBtn.title = 'צפייה בגלריה';
+      albumBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <path d="M21 15l-5-5L5 21"></path>
+        </svg>`;
+    } else {
+      albumBtn.href = '/index.html';
+      albumBtn.title = 'חזרה לאלבום';
+      albumBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+      <path d="M3 6h7a2 2 0 0 1 2 2v10H5a2 2 0 0 1-2-2V6z" />
+      <path d="M21 6h-7a2 2 0 0 0-2 2v10h7a2 2 0 0 0 2-2V6z" />
+    </svg>`;
+    }
+  }
+
+  </script>
+</body>
+</html>
