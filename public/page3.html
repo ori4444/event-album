@@ -65,17 +65,23 @@
       100% { transform: rotate(360deg); }
     }
 
-    .floating-blessing {
-      position: absolute;
-      font-size: 1.8vh;
-      color: rgb(47, 0, 255);
-      z-index: 100;
-      text-align: center;
-      text-shadow: 1px 1px 2px white;
-      max-width: 20vw;
-      transform: rotate(-5deg);
-      pointer-events: none;
-    }
+.floating-blessing {
+  position: absolute;
+  font-size: 1.8vh;
+  color: #1E90FF; /* Dodger Blue */
+  padding: 8px 12px;
+  z-index: 100;
+  text-align: center;
+  text-shadow: 0 0 8px #0D47A1; /* צל כחול כהה */
+  max-width: 20vw;
+  transform: rotate(-5deg);
+  pointer-events: none;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+
   </style>
 </head>
 <body>
