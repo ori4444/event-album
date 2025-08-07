@@ -88,6 +88,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      border: none;
     }
 
     .download-btn:hover {
@@ -139,11 +140,11 @@
   <div class="modal" id="modal" onclick="closeModal(event)">
     <div class="modal-content">
       <img id="modal-img" src="" alt="full" />
-      <a id="download-link" class="download-btn">
+      <button id="download-btn" class="download-btn">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path d="M5 20h14v-2H5v2zm7-18L5.33 9h4.17v6h4V9h4.17L12 2z" />
         </svg>
-      </a>
+      </button>
     </div>
   </div>
 
@@ -191,8 +192,30 @@
     function openModal(src) {
       const modal = document.getElementById('modal');
       const modalImg = document.getElementById('modal-img');
+      const downloadBtn = document.getElementById('download-btn');
+
       modalImg.src = src;
       modal.style.display = 'flex';
+
+      downloadBtn.onclick = async function (e) {
+        e.stopPropagation();
+        console.log('⬇️ Download button clicked:', src);
+        try {
+          const response = await fetch(src);
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'image';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          console.log('✅ Download triggered');
+        } catch (err) {
+          console.error('❌ Failed to download:', err);
+        }
+      };
     }
 
     function closeModal(e) {
