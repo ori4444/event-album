@@ -33,6 +33,7 @@
       background-color: white;
       padding: 1vh 1.5vw 2.5vh 1.5vw;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 0;
     }
 
     .image-wrapper:nth-child(1) { --zigzag: -16vw; }
@@ -52,18 +53,15 @@
       transform: scale(1.03) rotate(calc(-6deg + 12deg * var(--rand, 0)));
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
-.image-wrapper {
-  position: relative;
-  left: var(--zigzag, 0);
-  transform: rotate(calc(-6deg + 12deg * var(--rand, 0)));
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 8px;
-  background-color: white;
-  padding: 1vh 1.5vw 2.5vh 1.5vw;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 0; /* ← הוסף את זה */
-}
 
+    .image-wrapper img {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .image-wrapper img.loaded {
+      opacity: 1;
+    }
 
     .image-wrapper::before {
       content: '';
@@ -121,14 +119,11 @@
       max-width: 90vw;
       text-align: center;
       display: none;
-text-shadow:
-  -2.5px -2.5px 0 white,
-   2.5px -2.5px 0 white,
-  -2.5px  2.5px 0 white,
-   2.5px  2.5px 0 white;
-
-
-
+      text-shadow:
+        -1px -1px 0 white,
+         1px -1px 0 white,
+        -1px  1px 0 white,
+         1px  1px 0 white;
     }
 
     .blessing2, .blessing3, .blessing4 {
@@ -142,16 +137,11 @@ text-shadow:
       font-family: 'Varela Round', sans-serif;
       font-size: 1.5vh;
       color: #5A3921;
-text-shadow:
-  -2.5px -2.5px 0 white,
-   2.5px -2.5px 0 white,
-  -2.5px  2.5px 0 white,
-   2.5px  2.5px 0 white;
-
-
-
-
-
+      text-shadow:
+        -1px -1px 0 white,
+         1px -1px 0 white,
+        -1px  1px 0 white,
+         1px  1px 0 white;
       padding: 1vh;
       text-align: center;
       background: none;
@@ -162,7 +152,6 @@ text-shadow:
     .blessing2 { left: -48%; }
     .blessing3 { right: -48%; }
     .blessing4 { left: -48%; }
-
   </style>
 </head>
 
@@ -186,59 +175,63 @@ text-shadow:
     </div>
   </div>
 
-<script>
-  window.addEventListener('message', (event) => {
-    const urls = event.data.images;
-    const iframeId = event.data.iframeId;
-    const container = document.getElementById('imageContainer');
+  <script>
+    window.addEventListener('message', (event) => {
+      const urls = event.data.images;
+      const iframeId = event.data.iframeId;
+      const container = document.getElementById('imageContainer');
 
-    console.log("📥 Received images:", urls);
+      console.log("📥 Received images:", urls);
 
-    urls.forEach((imgObj, i) => {
-      const img = document.getElementById(`img${i + 1}`);
-      const blessingEl = document.querySelector(`.blessing${i + 1}`);
-      if (img && imgObj.url) {
-        img.src = imgObj.url;
-        console.log(`✅ Set img${i + 1} src to`, imgObj.url);
+      urls.forEach((imgObj, i) => {
+        const img = document.getElementById(`img${i + 1}`);
+        const blessingEl = document.querySelector(`.blessing${i + 1}`);
+
+        if (img && imgObj.url) {
+          img.onload = () => {
+            img.classList.add('loaded');
+          };
+          img.src = imgObj.url;
+          console.log(`✅ Set img${i + 1} src to`, imgObj.url);
+        }
+
+        if (i === 0 && imgObj.blessing) {
+          const globalBlessing = document.getElementById('globalBlessing');
+          globalBlessing.textContent = imgObj.blessing;
+          globalBlessing.style.display = 'block';
+          console.log("🌸 Global blessing shown:", imgObj.blessing);
+        }
+
+        if (i > 0 && blessingEl && imgObj.blessing && imgObj.blessing.trim() !== '') {
+          blessingEl.textContent = imgObj.blessing;
+          console.log(`🌼 Blessing${i + 1} set to:`, imgObj.blessing);
+        }
+      });
+
+      for (let i = urls.length; i < 4; i++) {
+        const wrapper = document.getElementById(`wrapper${i + 1}`);
+        if (wrapper) {
+          wrapper.style.display = 'none';
+          console.log(`❌ Hiding wrapper${i + 1}`);
+        }
       }
 
-      if (i === 0 && imgObj.blessing) {
-        const globalBlessing = document.getElementById('globalBlessing');
-        globalBlessing.textContent = imgObj.blessing;
-        globalBlessing.style.display = 'block';
-        console.log("🌸 Global blessing shown:", imgObj.blessing);
+      if (urls.length === 1) {
+        container.className = 'container one-image';
+      } else if (urls.length === 2) {
+        container.className = 'container two-images';
+      } else if (urls.length === 3) {
+        container.className = 'container three-images';
+      } else {
+        container.className = 'container four-images';
       }
 
-      if (i > 0 && blessingEl && imgObj.blessing && imgObj.blessing.trim() !== '') {
-        blessingEl.textContent = imgObj.blessing;
-        console.log(`🌼 Blessing${i + 1} set to:`, imgObj.blessing);
-      }
+      setTimeout(() => {
+        const height = document.body.scrollHeight;
+        window.parent.postMessage({ iframeId, height }, '*');
+      }, 100);
     });
-
-    for (let i = urls.length; i < 4; i++) {
-      const wrapper = document.getElementById(`wrapper${i + 1}`);
-      if (wrapper) {
-        wrapper.style.display = 'none';
-        console.log(`❌ Hiding wrapper${i + 1}`);
-      }
-    }
-
-    if (urls.length === 1) {
-      container.className = 'container one-image';
-    } else if (urls.length === 2) {
-      container.className = 'container two-images';
-    } else if (urls.length === 3) {
-      container.className = 'container three-images';
-    } else {
-      container.className = 'container four-images';
-    }
-
-    setTimeout(() => {
-      const height = document.body.scrollHeight;
-      window.parent.postMessage({ iframeId, height }, '*');
-    }, 100);
-  });
-</script>
+  </script>
 
 </body>
 </html>
