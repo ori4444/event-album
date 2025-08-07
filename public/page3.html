@@ -23,6 +23,12 @@
       width: 15vw;
       height: 15vw;
       pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out;
+    }
+
+    .moving-img.loaded {
+      opacity: 1;
     }
 
     .shape-circle {
@@ -45,10 +51,9 @@
       clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     }
 
-   .shape-triangle {
-  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
-}
-
+    .shape-triangle {
+      clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    }
 
     .shape-rounded-rect {
       clip-path: inset(0 round 20% 20%);
@@ -65,23 +70,22 @@
       100% { transform: rotate(360deg); }
     }
 
-.floating-blessing {
-  position: absolute;
-  font-size: 1.8vh;
-  color: #1E90FF; /* Dodger Blue */
-  padding: 8px 12px;
-  z-index: 100;
-  text-align: center;
-  text-shadow: 0 0 8px #0D47A1; /* צל כחול כהה */
-  max-width: 20vw;
-  transform: rotate(-5deg);
-  pointer-events: none;
-  font-weight: 600;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  user-select: none;
-  transition: all 0.3s ease;
-}
-
+    .floating-blessing {
+      position: absolute;
+      font-size: 1.8vh;
+      color: #1E90FF;
+      padding: 8px 12px;
+      z-index: 100;
+      text-align: center;
+      text-shadow: 0 0 8px #0D47A1;
+      max-width: 20vw;
+      transform: rotate(-5deg);
+      pointer-events: none;
+      font-weight: 600;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+      transition: all 0.3s ease;
+    }
   </style>
 </head>
 <body>
@@ -137,6 +141,7 @@
       img.src = url;
       img.className = `moving-img ${shapeClass}`;
       img.style.transform = `scale(${settings.scale})`;
+      img.onload = () => img.classList.add('loaded');
 
       const container = document.createElement('div');
       if (settings.spin) {
