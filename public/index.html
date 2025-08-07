@@ -108,6 +108,7 @@ html, body {
   <!-- כאן נטען את הבר מתוך הקובץ החיצוני -->
   <div id="upload-bar-container"></div>
   <script>
+
     fetch('bar.html')
       .then(response => response.text())
       .then(html => {
@@ -159,9 +160,13 @@ html, body {
         index += count;
         layoutIndex = (layoutIndex + 1) % layouts.length;
       }
-      if (scrollToBottom) {
-        setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 0);
-      }
+    if (scrollToBottom) {
+  setTimeout(() => {
+    window.scrollTo(0, document.body.scrollHeight);
+    window.history.replaceState(null, '', window.location.pathname);
+  }, 0);
+}
+
     }
 
     Promise.all([
@@ -180,15 +185,7 @@ html, body {
       hideSpinner();
     });
 
-    window.addEventListener('load', () => {
-      const hash = window.location.hash;
-      if (hash === '#bottom-anchor') {
-        const anchor = document.querySelector(hash);
-        if (anchor) {
-          anchor.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    });
+
     window.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('scrollAfterUpload') === 'true') {
     sessionStorage.removeItem('scrollAfterUpload');
@@ -206,6 +203,7 @@ html, body {
     }, 800); // תזמון מותאם לטעינה שלך
   }
   });
+  
   </script>
 </body>
 </html>

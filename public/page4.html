@@ -41,6 +41,8 @@
       display: block;
       border-radius: 1vh;
       vertical-align: middle;
+      opacity: 0;
+      animation: fadeIn 1s ease-in-out forwards;
     }
 
     .bottom-half {
@@ -62,6 +64,8 @@
       box-shadow: 0 0 1.5vh rgba(255, 215, 0, 0.4);
       background-color: rgba(255, 255, 255, 0.01);
       display: none;
+      opacity: 0;
+      animation: fadeIn 1s ease-in-out forwards;
     }
 
     .blessing {
@@ -74,13 +78,11 @@
       text-align: center;
       pointer-events: none;
       white-space: pre-wrap;
-text-shadow:
-  -0.03px -0.03px 0 white,
-   0.03px -0.03px 0 white,
-  -0.03px  0.03px 0 white,
-   0.03px  0.03px 0 white;
-
-
+      text-shadow:
+        -0.03px -0.03px 0 white,
+         0.03px -0.03px 0 white,
+        -0.03px  0.03px 0 white,
+         0.03px  0.03px 0 white;
     }
 
     .top-blessing {
@@ -102,6 +104,12 @@ text-shadow:
       left: 65vw;
       bottom: 30vh;
       transform: rotate(2deg);
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
     }
   </style>
 </head>
@@ -176,4 +184,3 @@ text-shadow:
   </script>
 </body>
 </html>
-ד

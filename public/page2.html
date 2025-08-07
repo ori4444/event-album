@@ -5,192 +5,198 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wedding Album - Fixed Center Video Only</title>
   <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-    }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
 
-    .outer-wrapper {
-      min-height: 100vh;
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1750564867/ChatGPT_Image_Jun_22_2025_07_00_54_AM_gp8fup.png') no-repeat center center fixed;
-      background-size: cover;
-      box-sizing: border-box;
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
+.outer-wrapper {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: url('https://res.cloudinary.com/dbpxjgghy/image/upload/v1750564867/ChatGPT_Image_Jun_22_2025_07_00_54_AM_gp8fup.png') no-repeat center center fixed;
+  background-size: cover;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
-    .top-row-wrapper {
-      display: flex;
-      justify-content: center;
-      width: 100%;
-      flex-shrink: 0;
-      padding: 2vh 0 1vh 0;
-      flex-direction: column;
-      align-items: center;
-    }
+.top-row-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex-shrink: 0;
+  padding: 2vh 0 1vh 0;
+  flex-direction: column;
+  align-items: center;
+}
 
-    .bottom-row-wrapper {
-      display: flex;
-      justify-content: center;
-      width: 100%;
-      flex-shrink: 0;
-      padding-top: 2vh;
-      padding-bottom: min(12vh, max(3vh, 100vh - 100%));
-    }
+.bottom-row-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex-shrink: 0;
+  padding-top: 2vh;
+  padding-bottom: min(12vh, max(3vh, 100vh - 100%));
+}
 
-    .top-row,
-    .bottom-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4vw;
-    }
+.top-row,
+.bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4vw;
+}
 
-    .top-row img,
-    .bottom-row img {
-      width: 18vh;
-      height: auto;
-      object-fit: contain;
-      border-radius: 12px;
-      animation: pulse 4s infinite ease-in-out;
-      opacity: 0;
-      transition: opacity 1.2s ease-in-out;
-    }
+.top-row img,
+.bottom-row img {
+  width: 18vh;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  animation: pulse 4s infinite ease-in-out;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
 
-    .full-wrapper {
-      flex-grow: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+.full-wrapper {
+  flex-grow: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .grid-container {
-      position: relative;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      gap: 2vh 2vw;
-      height: 100%;
-      width: 90vw;
-      align-items: center;
-      justify-items: center;
-    }
+.grid-container {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2vh 2vw;
+  height: 100%;
+  width: 90vw;
+  align-items: center;
+  justify-items: center;
+}
 
-    .grid-item {
-      height: 18vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+.grid-item {
+  height: 18vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .grid-item img,
-    .grid-item-small img {
-      height: auto;
-      width: 24vh;
-      object-fit: contain;
-      display: block;
-      border-radius: 12px;
-      animation: pulse 4s infinite ease-in-out;
-      opacity: 0;
-      transition: opacity 1.2s ease-in-out;
-    }
+.grid-item img,
+.grid-item-small img {
+  height: auto;
+  width: 24vh;
+  object-fit: contain;
+  display: block;
+  border-radius: 12px;
+  animation: pulse 4s infinite ease-in-out;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
 
-    img.loaded {
-      opacity: 1;
-    }
+.side-absolute {
+  position: absolute;
+  width: 14vh;
+  height: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
 
-    .side-absolute {
-      position: absolute;
-      width: 14vh;
-      height: auto;
-      top: 50%;
-      transform: translateY(-50%);
-    }
+.side-left {
+  left: max(2vw, calc(50% - 36vh));
+}
 
-    .side-left {
-      left: max(2vw, calc(50% - 36vh));
-    }
+.side-right {
+  right: max(2vw, calc(50% - 36vh));
+}
 
-    .side-right {
-      right: max(2vw, calc(50% - 36vh));
-    }
+.side-absolute img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  border-radius: 12px;
+  animation: pulse 4s infinite ease-in-out;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
 
-    .side-absolute img {
-      width: 100%;
-      height: auto;
-      display: block;
-      object-fit: contain;
-      border-radius: 12px;
-      animation: pulse 4s infinite ease-in-out;
-      opacity: 0;
-      transition: opacity 1.2s ease-in-out;
-    }
+img.loaded {
+  opacity: 1;
+}
 
-    .center-piece {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 7vh;
-      height: 7vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border-radius: 30%;
-      z-index: 0; /* לב מאחורי התמונות */
-      pointer-events: none;
-    }
+.center-piece {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 7vh;
+  height: 7vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 30%;
+  z-index: 5;
+  pointer-events: none;
+}
 
-    .floating-blessing {
-      font-family: 'Varela Round', sans-serif;
-      font-size: 1.8vh;
-      color: red;
-      text-align: center;
-      max-width: 30vw;
-      position: absolute;
-      pointer-events: none;
-      z-index: 100;
-    }
+.floating-blessing {
+  font-family: 'Varela Round', sans-serif;
+  font-size: 1.8vh;
+  color: red;
+  text-align: center;
+  max-width: 30vw;
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+}
 
-    .center-piece video {
-      width: 130%;
-      height: 120%;
-      object-fit: cover;
-      border: none;
-    }
+@keyframes floatIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
 
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.05);
-      }
-    }
+.center-piece video {
+  width: 130%;
+  height: 120%;
+  object-fit: cover;
+  border: none;
+}
 
-    @media (max-width: 768px) {
-      .side-left {
-        left: max(2vw, calc(50% - 28vh));
-      }
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
 
-      .side-right {
-        right: max(2vw, calc(50% - 28vh));
-      }
+@media (max-width: 768px) {
+  .side-left {
+    left: max(2vw, calc(50% - 28vh));
+  }
 
-      .top-row img,
-      .bottom-row img {
-        width: 16vh;
-      }
-    }
+  .side-right {
+    right: max(2vw, calc(50% - 28vh));
+  }
+
+  .top-row img,
+  .bottom-row img {
+    width: 16vh;
+  }
+}
   </style>
 </head>
 
