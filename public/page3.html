@@ -39,24 +39,14 @@
       clip-path: ellipse(50% 35% at 50% 50%);
     }
 
-    .shape-star {
-      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-    }
+   .shape-star {
+  /* עיגול מעט קטן יותר */
+  clip-path: circle(46% at 50% 50%);
+}
 
- .shape-heart {
-  width: 200px;
-  height: 200px;
-  background: red;
-  clip-path: polygon(
-    50% 80%,
-    20% 60%,
-    0% 35%,
-    25% 10%,
-    50% 25%,
-    75% 10%,
-    100% 35%,
-    80% 60%
-  );
+.shape-heart {
+  /* עיגול מעט גדול יותר, יוצר שונות עדינה בין העיגולים */
+  clip-path: circle(52% at 50% 50%);
 }
 
 
